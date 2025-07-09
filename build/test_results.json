@@ -1,0 +1,1 @@
+{"model_type": "classification", "model_name": "sample_model", "model_version": "1.0.0", "test_metrics": {"accuracy": 0.9, "precision": 0.9011539629517157, "recall": 0.9, "f1": 0.8997584541062801}, "timestamp": "2025-07-09T05:02:19.186779"}

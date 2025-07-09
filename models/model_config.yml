@@ -1,0 +1,30 @@
+data:
+  test_path: data/regression_test.csv
+  test_split: 0.1
+  train_path: data/regression_train.csv
+  validation_split: 0.2
+evaluation:
+  metrics:
+  - accuracy
+  - precision
+  - recall
+  - f1
+  - mse
+  - mae
+  - rmse
+model:
+  name: sample_model
+  type: regression
+  version: 1.0.0
+parameters:
+  activation: relu
+  dropout_rate: 0.2
+  hidden_layers:
+  - 64
+  - 32
+training:
+  batch_size: 32
+  early_stopping: true
+  epochs: 100
+  learning_rate: 0.001
+  patience: 10

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation du Pipeline ML CI/CD</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        code {
+            background-color: #f5f5f5;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        .alert-info {
+            background-color: #d9edf7;
+            border-left: 5px solid #31708f;
+            color: #31708f;
+        }
+        .alert-warning {
+            background-color: #fcf8e3;
+            border-left: 5px solid #8a6d3b;
+            color: #8a6d3b;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        th, td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Documentation du Pipeline ML CI/CD</h1>
+        
+        <div class="alert alert-info">
+            Ce projet implémente un pipeline CI/CD pour automatiser le processus de construction, test, évaluation et déploiement de modèles de machine learning.
+        </div>
+        
+        <h2>Table des matières</h2>
+        <ul>
+            <li><a href="#introduction">Introduction</a></li>
+            <li><a href="#installation">Installation</a></li>
+            <li><a href="#utilisation">Utilisation</a></li>
+            <li><a href="#configuration">Configuration</a></li>
+            <li><a href="#pipeline">Pipeline CI/CD</a></li>
+            <li><a href="#modeles">Modèles supportés</a></li>
+            <li><a href="#app">Application de visualisation</a></li>
+        </ul>
+        
+        <h2 id="introduction">Introduction</h2>
+        <p>
+            Le pipeline ML CI/CD est conçu pour automatiser le flux de travail de développement de modèles de machine learning.
+            Il permet de:
+        </p>
+        <ul>
+            <li>Construire et entraîner des modèles de façon reproductible</li>
+            <li>Tester les modèles sur des données indépendantes</li>
+            <li>Évaluer les performances avec des métriques appropriées</li>
+            <li>Comparer les performances avec les versions précédentes</li>
+            <li>Déployer automatiquement les modèles améliorés</li>
+            <li>Visualiser les résultats via une interface utilisateur</li>
+        </ul>
+        
+        <h2 id="installation">Installation</h2>
+        <p>Pour installer le projet et ses dépendances:</p>
+        <pre><code>git clone https://github.com/votre-utilisateur/ml-pipeline-projet.git
+cd ml-pipeline-projet
+pip install -r requirements.txt</code></pre>
+        
+        <h2 id="utilisation">Utilisation</h2>
+        <p>Le script <code>run.py</code> permet d'exécuter le pipeline complet ou des étapes spécifiques:</p>
+        
+        <h3>Générer des données synthétiques</h3>
+        <pre><code>python run.py --generate-data --type classification</code></pre>
+        <p>ou pour la régression:</p>
+        <pre><code>python run.py --generate-data --type regression</code></pre>
+        
+        <h3>Exécuter le pipeline complet</h3>
+        <pre><code>python run.py --stages all --type classification</code></pre>
+        
+        <h3>Exécuter des étapes spécifiques</h3>
+        <pre><code>python run.py --stages build test --type regression</code></pre>
+        
+        <h3>Lancer l'application de visualisation</h3>
+        <pre><code>python run.py --run-app</code></pre>
+        <p>Ou directement:</p>
+        <pre><code>streamlit run app/app.py</code></pre>
+        
+        <h2 id="configuration">Configuration</h2>
+        <p>
+            La configuration des modèles se fait via le fichier <code>models/model_config.yml</code>:
+        </p>
+        <pre><code>model:
+  name: "sample_model"
+  type: "classification"  # ou "regression"
+  version: "1.0.0"
+  
+data:
+  train_path: "data/train.csv"
+  test_path: "data/test.csv"
+  validation_split: 0.2
+  test_split: 0.1
+  
+training:
+  epochs: 100
+  batch_size: 32
+  learning_rate: 0.001
+  
+evaluation:
+  metrics:
+    # Pour la classification
+    - accuracy
+    - precision
+    - recall
+    - f1
+    # Pour la régression
+    - mse
+    - mae
+    - rmse</code></pre>
+        
+        <h2 id="pipeline">Pipeline CI/CD</h2>
+        <p>Le pipeline comprend les étapes suivantes:</p>
+        
+        <table>
+            <tr>
+                <th>Étape</th>
+                <th>Description</th>
+                <th>Script</th>
+            </tr>
+            <tr>
+                <td>Build</td>
+                <td>Construction et entraînement du modèle</td>
+                <td><code>src/build_model.py</code></td>
+            </tr>
+            <tr>
+                <td>Test</td>
+                <td>Test du modèle sur des données non vues</td>
+                <td><code>src/test_model.py</code></td>
+            </tr>
+            <tr>
+                <td>Evaluate</td>
+                <td>Évaluation des performances du modèle</td>
+                <td><code>src/evaluate_model.py</code></td>
+            </tr>
+            <tr>
+                <td>Compare</td>
+                <td>Comparaison avec la version précédente</td>
+                <td><code>src/compare_models.py</code></td>
+            </tr>
+            <tr>
+                <td>Deploy</td>
+                <td>Déploiement du modèle s'il y a amélioration</td>
+                <td><code>src/deploy_model.py</code></td>
+            </tr>
+        </table>
+        
+        <h3>Intégration avec GitHub Actions</h3>
+        <p>
+            Le pipeline est configuré pour s'exécuter automatiquement via GitHub Actions lorsque des changements sont
+            poussés vers la branche principale. La configuration se trouve dans <code>workflows/ml_pipeline.yml</code>.
+        </p>
+        
+        <h2 id="modeles">Modèles supportés</h2>
+        <p>Le pipeline prend en charge deux types de modèles:</p>
+        
+        <h3>Modèles de régression</h3>
+        <p>Pour la prédiction de valeurs continues:</p>
+        <ul>
+            <li>Métriques: MSE, MAE, RMSE, R²</li>
+            <li>Visualisations: Scatter plot (prédictions vs réel), Histogramme des erreurs</li>
+        </ul>
+        
+        <h3>Modèles de classification</h3>
+        <p>Pour la prédiction de catégories:</p>
+        <ul>
+            <li>Métriques: Accuracy, Precision, Recall, F1-score</li>
+            <li>Visualisations: Matrice de confusion, Courbe ROC, Courbe Précision-Rappel</li>
+        </ul>
+        
+        <h2 id="app">Application de visualisation</h2>
+        <p>
+            L'application Streamlit fournit une interface utilisateur pour visualiser les résultats des modèles:
+        </p>
+        <ul>
+            <li><strong>Tableau de bord</strong>: Vue d'ensemble des performances du modèle actuel</li>
+            <li><strong>Détails du modèle</strong>: Informations détaillées et métriques</li>
+            <li><strong>Comparaison</strong>: Comparaison avec les versions précédentes</li>
+        </ul>
+        
+        <div class="alert alert-warning">
+            <strong>Note:</strong> Pour que l'application fonctionne correctement, vous devez avoir exécuté au moins une fois
+            le pipeline complet afin de générer les résultats à visualiser.
+        </div>
+        
+        <hr>
+        <p><em>Documentation créée pour le projet Pipeline ML CI/CD - 2023</em></p>
+    </div>
+</body>
+</html>
