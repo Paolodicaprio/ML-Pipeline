@@ -144,7 +144,8 @@ def main():
     # Convertir 'all' en None pour exécuter toutes les étapes
     stages = args.stages
     if stages and 'all' in stages:
-        stages = None
+         logger.info("Toutes les étapes du pipeline vont être exécutées")
+         stages = None
     
     try:
         # Préparer l'environnement
@@ -163,11 +164,11 @@ def main():
                 logger.error("Échec de la mise à jour de la configuration")
                 sys.exit(1)
         
-        # Exécuter les étapes du pipeline si spécifiées
-        if stages:
-            if not run_pipeline(stages):
-                logger.error("Échec du pipeline")
-                sys.exit(1)
+        # Exécuter les étapes du pipeline (même si stages=None pour exécuter toutes les étapes)
+        if not run_pipeline(stages):
+            logger.error("Échec du pipeline")
+            sys.exit(1)
+
         
         # Lancer l'application si demandé
         if args.run_app:

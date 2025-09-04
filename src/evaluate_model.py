@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Script pour évaluer les performances d'un modèle de machine learning.
 """

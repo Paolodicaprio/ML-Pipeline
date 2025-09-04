@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Script pour comparer les performances de deux versions d'un modèle.
 """

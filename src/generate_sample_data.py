@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Script pour générer des données synthétiques pour tester le pipeline.
 """

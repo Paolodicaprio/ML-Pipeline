@@ -33,3 +33,20 @@ Ce projet implémente un pipeline CI/CD pour des modèles de machine learning, p
   - Métriques: MSE, MAE, RMSE
 - **Classification**: Modèles qui produisent des sorties discrètes
   - Métriques: Précision, Rappel, F1-score
+
+   Comment exécuter le projet
+
+1. **Pipeline complet** :
+   ```
+   python run.py --type [classification|regression] --generate-data --stages all
+   ```
+
+2. **Application Streamlit** :
+   ```
+   streamlit run app/app.py
+   ```
+
+3. **Entraîner un nouveau modèle avec des paramètres différents** :
+   ```
+   python train_new_model.py
+   ```

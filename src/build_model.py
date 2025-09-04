@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Script pour construire un modèle de machine learning à partir de la configuration YAML.
 """

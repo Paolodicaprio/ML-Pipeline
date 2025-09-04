@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Script pour tester un modèle de machine learning construit.
 """

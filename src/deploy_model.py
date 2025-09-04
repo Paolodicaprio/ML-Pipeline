@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Script pour déployer un modèle de machine learning.
 """

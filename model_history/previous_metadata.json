@@ -1,0 +1,1 @@
+{"model_type": "regression", "model_name": "sample_model", "model_version": "1.0.0", "training_params": {"batch_size": 32, "early_stopping": true, "epochs": 100, "learning_rate": 0.001, "patience": 10}, "validation_metrics": {"mse": 3473.646117949189, "mae": 46.729885264197094, "rmse": 58.93764601635519}, "build_timestamp": "2025-07-10T11:57:23.564887"}

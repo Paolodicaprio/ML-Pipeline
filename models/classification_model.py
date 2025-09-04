@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Exemple d'un modèle de classification simple.
 """

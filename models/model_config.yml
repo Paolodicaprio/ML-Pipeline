@@ -1,7 +1,7 @@
 data:
-  test_path: data/regression_test.csv
+  test_path: data/classification_test.csv
   test_split: 0.1
-  train_path: data/regression_train.csv
+  train_path: data/classification_train.csv
   validation_split: 0.2
 evaluation:
   metrics:
@@ -9,22 +9,18 @@ evaluation:
   - precision
   - recall
   - f1
-  - mse
-  - mae
-  - rmse
 model:
-  name: sample_model
-  type: regression
-  version: 1.0.0
+  algorithm: random_forest
+  name: ClassifierModel
+  type: classification
+  version: 2.0.0
 parameters:
-  activation: relu
-  dropout_rate: 0.2
-  hidden_layers:
-  - 64
-  - 32
+  max_depth: 15
+  min_samples_leaf: 2
+  min_samples_split: 5
+  n_estimators: 200
 training:
-  batch_size: 32
-  early_stopping: true
-  epochs: 100
-  learning_rate: 0.001
-  patience: 10
+  batch_size: 64
+  epochs: 150
+  learning_rate: 0.01
+  validation_split: 0.2

@@ -1,0 +1,1 @@
+{"model_type": "classification", "model_name": "ClassifierModel", "model_version": "2.0.0", "training_params": {"batch_size": 64, "epochs": 150, "learning_rate": 0.01, "validation_split": 0.2}, "validation_metrics": {"accuracy": 0.88125, "precision": 0.8811215957955089, "recall": 0.88125, "f1": 0.8811508804006518}, "build_timestamp": "2025-07-10T12:56:50.422856"}

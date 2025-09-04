@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Script pour exécuter tous les tests unitaires.
 """

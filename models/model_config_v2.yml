@@ -1,0 +1,31 @@
+# Configuration du modèle - Version 2.0.0
+model:
+  name: "ClassifierModel"
+  version: "2.0.0"
+  type: "classification"
+  algorithm: "random_forest"
+
+parameters:
+  n_estimators: 200  # Augmenté de 100 à 200
+  max_depth: 15      # Augmenté de 10 à 15
+  min_samples_split: 5  # Augmenté pour réduire l'overfitting
+  min_samples_leaf: 2   # Augmenté pour réduire l'overfitting
+
+training:
+  epochs: 150        # Augmenté de 100 à 150
+  batch_size: 64     # Augmenté de 32 à 64
+  learning_rate: 0.01  # Augmenté de 0.001 à 0.01
+  validation_split: 0.2
+
+evaluation:
+  metrics:
+    - "accuracy"
+    - "precision"
+    - "recall"
+    - "f1"
+
+data:
+  train_path: "data/classification_train.csv"
+  test_path: "data/classification_test.csv"
+  test_split: 0.1
+  validation_split: 0.2

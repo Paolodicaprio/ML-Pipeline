@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Application Streamlit pour visualiser les résultats des modèles de machine learning.
 """
@@ -63,7 +62,7 @@ if page == "📈 Tableau de bord":
     st.header("📈 Tableau de bord")
     
     # Rechercher les rapports disponibles
-    reports_path = "../deploy"
+    reports_path = "deploy"
     if os.path.exists(reports_path):
         st.success("Modèles déployés trouvés!")
         
@@ -130,7 +129,7 @@ elif page == "🔍 Détails du modèle":
     st.header("🔍 Détails du modèle")
     
     # Vérifier si un modèle est déployé
-    deploy_path = "../deploy"
+    deploy_path = "deploy"
     if os.path.exists(deploy_path):
         # Charger les métadonnées du modèle
         metadata = load_data(os.path.join(deploy_path, "model_metadata.json"))
@@ -181,10 +180,10 @@ elif page == "🔄 Comparaison":
     st.header("🔄 Comparaison des modèles")
     
     # Vérifier si un rapport de comparaison est disponible
-    deploy_path = "../deploy"
+    deploy_path = "deploy"
     if os.path.exists(deploy_path):
         # Tenter de charger un rapport de comparaison
-        comparison_path = os.path.join("../build", "comparison_report.json")
+        comparison_path = os.path.join("build", "comparison_report.json")
         if os.path.exists(comparison_path):
             comparison = load_data(comparison_path)
             if comparison:
