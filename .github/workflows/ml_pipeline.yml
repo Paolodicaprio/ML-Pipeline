@@ -1,0 +1,633 @@
+name: ML Model Pipeline CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'models/**'
+      - 'src/**'
+      - 'data/**'
+      - 'requirements.txt'
+      - '.github/workflows/**'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'models/**'
+      - 'src/**'
+      - 'data/**'
+      - 'requirements.txt'
+      - '.github/workflows/**'
+
+env:
+  PYTHON_VERSION: '3.10'
+  MODEL_TYPE: 'classification'
+
+jobs:
+  setup:
+    name: 🔧 Setup Environment
+    runs-on: ubuntu-latest
+    outputs:
+      python-version: ${{ steps.setup-python.outputs.python-version }}
+      cache-key: ${{ steps.cache-key.outputs.key }}
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Nécessaire pour la comparaison Git
+          
+      - name: 🐍 Set up Python
+        id: setup-python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          
+      - name: 🔑 Generate cache key
+        id: cache-key
+        run: |
+          echo "key=pip-${{ runner.os }}-${{ env.PYTHON_VERSION }}-${{ hashFiles('requirements.txt') }}" >> $GITHUB_OUTPUT
+          
+      - name: 📊 Log environment info
+        run: |
+          echo "🔍 Environment Information:"
+          echo "Python version: $(python --version)"
+          echo "Pip version: $(pip --version)"
+          echo "Working directory: $(pwd)"
+          echo "Repository: ${{ github.repository }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit SHA: ${{ github.sha }}"
+          echo "Event: ${{ github.event_name }}"
+
+  install:
+    name: 📦 Install Dependencies
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ needs.setup.outputs.python-version }}
+          
+      - name: 💾 Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ needs.setup.outputs.cache-key }}
+          restore-keys: |
+            pip-${{ runner.os }}-${{ env.PYTHON_VERSION }}-
+            
+      - name: 📦 Install dependencies
+        run: |
+          echo "🔄 Updating pip..."
+          python -m pip install --upgrade pip
+          echo "📋 Installing requirements..."
+          pip install -r requirements.txt
+          echo "✅ Dependencies installed successfully"
+          
+      - name: 📋 Log installed packages
+        run: |
+          echo "📦 Installed packages:"
+          pip list
+          
+      - name: 🧪 Verify critical imports
+        run: |
+          echo "🔍 Verifying critical imports..."
+          python -c "
+          import sys
+          critical_packages = ['numpy', 'pandas', 'scikit-learn', 'matplotlib', 'seaborn', 'yaml', 'streamlit']
+          for package in critical_packages:
+              try:
+                  __import__(package)
+                  print(f'✅ {package}: OK')
+              except ImportError as e:
+                  print(f'❌ {package}: FAILED - {e}')
+                  sys.exit(1)
+          print('🎉 All critical packages imported successfully')
+          "
+
+  build:
+    name: 🏗️ Build Model
+    runs-on: ubuntu-latest
+    needs: [setup, install]
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ needs.setup.outputs.python-version }}
+          
+      - name: 💾 Restore pip cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ needs.setup.outputs.cache-key }}
+          
+      - name: 📦 Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          
+      - name: 📁 Create necessary directories
+        run: |
+          mkdir -p build data deploy model_history
+          echo "📁 Directories created successfully"
+          
+      - name: 🎲 Generate sample data
+        run: |
+          echo "🎲 Generating sample data for ${{ env.MODEL_TYPE }}..."
+          python src/generate_sample_data.py --type ${{ env.MODEL_TYPE }} --samples 1000 --features 10
+          echo "✅ Sample data generated"
+          
+      - name: 🏗️ Build model
+        run: |
+          echo "🏗️ Building ${{ env.MODEL_TYPE }} model..."
+          python src/build_model.py
+          echo "✅ Model built successfully"
+          
+      - name: 📊 Validate model artifacts
+        run: |
+          echo "🔍 Validating model artifacts..."
+          if [ -f "build/model.pkl" ]; then
+            echo "✅ Model file exists"
+            ls -la build/model.pkl
+          else
+            echo "❌ Model file missing"
+            exit 1
+          fi
+          
+          if [ -f "build/model_metadata.json" ]; then
+            echo "✅ Model metadata exists"
+            cat build/model_metadata.json | python -m json.tool
+          else
+            echo "❌ Model metadata missing"
+            exit 1
+          fi
+          
+      - name: 📤 Upload model artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: model-artifacts-${{ github.sha }}
+          path: |
+            build/model.pkl
+            build/model_metadata.json
+            build/validation_metrics.json
+            build/X_*.npy
+            build/y_*.npy
+          retention-days: 30
+          
+      - name: 📤 Upload build logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs-${{ github.sha }}
+          path: |
+            build/
+          retention-days: 7
+
+  test:
+    name: 🧪 Run Tests
+    runs-on: ubuntu-latest
+    needs: [setup, install, build]
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ needs.setup.outputs.python-version }}
+          
+      - name: 💾 Restore pip cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ needs.setup.outputs.cache-key }}
+          
+      - name: 📦 Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          
+      - name: 📥 Download model artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: model-artifacts-${{ github.sha }}
+          path: build/
+          
+      - name: 🧪 Run unit tests
+        run: |
+          echo "🧪 Running unit tests..."
+          if [ -f "tests/test_models.py" ]; then
+            python -m pytest tests/test_models.py -v --tb=short
+            echo "✅ Unit tests passed"
+          else
+            echo "⚠️ No unit tests found, creating basic test..."
+            python -c "
+            import os
+            import pickle
+            import json
+            
+            # Test model loading
+            assert os.path.exists('build/model.pkl'), 'Model file missing'
+            with open('build/model.pkl', 'rb') as f:
+                model = pickle.load(f)
+            print('✅ Model loads successfully')
+            
+            # Test metadata
+            assert os.path.exists('build/model_metadata.json'), 'Metadata missing'
+            with open('build/model_metadata.json', 'r') as f:
+                metadata = json.load(f)
+            assert 'model_type' in metadata, 'Model type missing in metadata'
+            print('✅ Metadata validation passed')
+            
+            print('🎉 Basic tests completed successfully')
+            "
+          fi
+          
+      - name: 🧪 Run integration tests
+        run: |
+          echo "🧪 Running integration tests..."
+          python src/test_model.py
+          echo "✅ Integration tests completed"
+          
+      - name: 📊 Validate test results
+        run: |
+          echo "🔍 Validating test results..."
+          if [ -f "build/test_results.json" ]; then
+            echo "✅ Test results file exists"
+            cat build/test_results.json | python -m json.tool
+          else
+            echo "❌ Test results file missing"
+            exit 1
+          fi
+          
+          if [ -f "build/prediction_results.json" ]; then
+            echo "✅ Prediction results file exists"
+          else
+            echo "❌ Prediction results file missing"
+            exit 1
+          fi
+          
+      - name: 📤 Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ github.sha }}
+          path: |
+            build/test_results.json
+            build/prediction_results.json
+          retention-days: 30
+
+  evaluate:
+    name: 📊 Evaluate Model
+    runs-on: ubuntu-latest
+    needs: [setup, install, test]
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ needs.setup.outputs.python-version }}
+          
+      - name: 💾 Restore pip cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ needs.setup.outputs.cache-key }}
+          
+      - name: 📦 Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          
+      - name: 📥 Download test results
+        uses: actions/download-artifact@v4
+        with:
+          name: test-results-${{ github.sha }}
+          path: build/
+          
+      - name: 📊 Evaluate model performance
+        run: |
+          echo "📊 Evaluating model performance..."
+          python src/evaluate_model.py
+          echo "✅ Model evaluation completed"
+          
+      - name: 📈 Generate performance metrics
+        run: |
+          echo "📈 Performance metrics summary:"
+          if [ -f "build/evaluation_report.json" ]; then
+            python -c "
+            import json
+            with open('build/evaluation_report.json', 'r') as f:
+                report = json.load(f)
+            
+            print('🎯 Model Information:')
+            model_info = report.get('model_info', {})
+            print(f'  - Name: {model_info.get(\"model_name\", \"N/A\")}')
+            print(f'  - Version: {model_info.get(\"model_version\", \"N/A\")}')
+            print(f'  - Type: {model_info.get(\"model_type\", \"N/A\")}')
+            
+            print('📊 Performance Metrics:')
+            metrics = report.get('metrics', {})
+            for metric, value in metrics.items():
+                print(f'  - {metric.upper()}: {value:.4f}')
+            "
+          else
+            echo "❌ Evaluation report missing"
+            exit 1
+          fi
+          
+      - name: 📤 Upload evaluation report
+        uses: actions/upload-artifact@v4
+        with:
+          name: evaluation-report-${{ github.sha }}
+          path: |
+            build/evaluation_report.json
+            build/visualizations/
+          retention-days: 30
+
+  compare:
+    name: 🔄 Compare Models
+    runs-on: ubuntu-latest
+    needs: [setup, install, evaluate]
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Nécessaire pour accéder à l'historique Git
+          
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ needs.setup.outputs.python-version }}
+          
+      - name: 💾 Restore pip cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ needs.setup.outputs.cache-key }}
+          
+      - name: 📦 Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          
+      - name: 📥 Download evaluation report
+        uses: actions/download-artifact@v4
+        with:
+          name: evaluation-report-${{ github.sha }}
+          path: build/
+          
+      - name: 🔄 Compare with v_best model
+        run: |
+          echo "🔄 Comparing current model with v_best..."
+          python src/compare_models.py
+          echo "✅ Model comparison completed"
+          
+      - name: 📊 Display comparison results
+        run: |
+          echo "📊 Comparison Results:"
+          if [ -f "build/comparison_report.json" ]; then
+            python -c "
+            import json
+            with open('build/comparison_report.json', 'r') as f:
+                report = json.load(f)
+            
+            current_model = report.get('current_model', {})
+            v_best_model = report.get('v_best_model', {})
+            
+            print('🆚 Model Comparison:')
+            print(f'  Current Model: {current_model.get(\"name\", \"N/A\")} v{current_model.get(\"version\", \"N/A\")}')
+            print(f'  V_Best Model: v{v_best_model.get(\"version\", \"None\")}')
+            
+            print('📈 Metrics Comparison:')
+            metrics_comparison = report.get('metrics_comparison', {})
+            improvements = 0
+            total_metrics = 0
+            
+            for metric, data in metrics_comparison.items():
+                if data.get('v_best') is not None:
+                    current_val = data.get('current', 0)
+                    v_best_val = data.get('v_best', 0)
+                    improvement = data.get('is_improvement', False)
+                    percentage = data.get('percentage_diff', 0)
+                    
+                    status = '✅' if improvement else '❌'
+                    print(f'  {status} {metric.upper()}: {current_val:.4f} vs {v_best_val:.4f} ({percentage:+.2f}%)')
+                    
+                    if improvement:
+                        improvements += 1
+                    total_metrics += 1
+                else:
+                    current_val = data.get('current', 0)
+                    print(f'  🆕 {metric.upper()}: {current_val:.4f} (first model)')
+            
+            overall_improvement = report.get('overall_improvement', False)
+            is_new_v_best = report.get('is_new_v_best', False)
+            
+            if total_metrics > 0:
+                improvement_ratio = improvements / total_metrics * 100
+                print(f'📊 Overall: {improvements}/{total_metrics} metrics improved ({improvement_ratio:.1f}%)')
+            
+            if is_new_v_best:
+                print('🌟 Result: NEW V_BEST MODEL!')
+            else:
+                print('📦 Result: V_Best model retained')
+            "
+          else
+            echo "❌ Comparison report missing"
+            exit 1
+          fi
+          
+      - name: ❌ Fail if model performance degraded significantly
+        run: |
+          echo "🔍 Checking for significant performance degradation..."
+          python -c "
+          import json
+          import sys
+          
+          with open('build/comparison_report.json', 'r') as f:
+              report = json.load(f)
+          
+          metrics_comparison = report.get('metrics_comparison', {})
+          degraded_metrics = 0
+          total_comparable_metrics = 0
+          
+          for metric, data in metrics_comparison.items():
+              if data.get('v_best') is not None and data.get('is_improvement') is not None:
+                  total_comparable_metrics += 1
+                  if not data.get('is_improvement', False):
+                      percentage_diff = data.get('percentage_diff', 0)
+                      if abs(percentage_diff) > 10:  # Dégradation de plus de 10%
+                          degraded_metrics += 1
+                          print(f'⚠️ Significant degradation in {metric}: {percentage_diff:.2f}%')
+          
+          if total_comparable_metrics > 0:
+              degradation_ratio = degraded_metrics / total_comparable_metrics
+              if degradation_ratio > 0.5:  # Plus de 50% des métriques dégradées significativement
+                  print(f'❌ CRITICAL: {degraded_metrics}/{total_comparable_metrics} metrics significantly degraded')
+                  print('Pipeline failed due to significant performance degradation')
+                  sys.exit(1)
+              else:
+                  print(f'✅ Performance check passed: {degraded_metrics}/{total_comparable_metrics} metrics degraded')
+          else:
+              print('✅ No comparable metrics found (first model)')
+          "
+          
+      - name: 📤 Upload comparison report
+        uses: actions/upload-artifact@v4
+        with:
+          name: comparison-report-${{ github.sha }}
+          path: |
+            build/comparison_report.json
+          retention-days: 30
+
+  deploy:
+    name: 🚀 Deploy Model
+    runs-on: ubuntu-latest
+    needs: [setup, install, compare]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ needs.setup.outputs.python-version }}
+          
+      - name: 💾 Restore pip cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ needs.setup.outputs.cache-key }}
+          
+      - name: 📦 Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          
+      - name: 📥 Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: "*-${{ github.sha }}"
+          merge-multiple: true
+          path: ./
+          
+      - name: 🚀 Deploy model
+        run: |
+          echo "🚀 Deploying model..."
+          python src/deploy_model.py
+          echo "✅ Model deployment completed"
+          
+      - name: 📊 Display deployment info
+        run: |
+          echo "📊 Deployment Information:"
+          if [ -f "deploy/deployment_info.json" ]; then
+            cat deploy/deployment_info.json | python -m json.tool
+          else
+            echo "⚠️ No deployment info available"
+          fi
+          
+          if [ -f "deploy/v_best/v_best_metadata.json" ]; then
+            echo "🌟 V_Best Model Information:"
+            cat deploy/v_best/v_best_metadata.json | python -m json.tool
+          fi
+          
+      - name: 📤 Upload deployment artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-artifacts-${{ github.sha }}
+          path: |
+            deploy/
+          retention-days: 90
+          
+      - name: 📝 Create deployment summary
+        run: |
+          echo "## 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📊 Model Information" >> $GITHUB_STEP_SUMMARY
+          
+          if [ -f "deploy/model_metadata.json" ]; then
+            python -c "
+            import json
+            with open('deploy/model_metadata.json', 'r') as f:
+                metadata = json.load(f)
+            
+            print(f'- **Model Name**: {metadata.get(\"model_name\", \"N/A\")}')
+            print(f'- **Version**: {metadata.get(\"model_version\", \"N/A\")}')
+            print(f'- **Type**: {metadata.get(\"model_type\", \"N/A\")}')
+            print(f'- **Commit**: ${{ github.sha }}')
+            print(f'- **Branch**: ${{ github.ref_name }}')
+            " >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📈 Performance Metrics" >> $GITHUB_STEP_SUMMARY
+          
+          if [ -f "build/comparison_report.json" ]; then
+            python -c "
+            import json
+            with open('build/comparison_report.json', 'r') as f:
+                report = json.load(f)
+            
+            metrics_comparison = report.get('metrics_comparison', {})
+            for metric, data in metrics_comparison.items():
+                current_val = data.get('current', 0)
+                print(f'- **{metric.upper()}**: {current_val:.4f}')
+            
+            if report.get('is_new_v_best', False):
+                print('')
+                print('🌟 **This model became the new v_best!**')
+            " >> $GITHUB_STEP_SUMMARY
+          fi
+
+  notify:
+    name: 📢 Notify Results
+    runs-on: ubuntu-latest
+    needs: [setup, install, build, test, evaluate, compare, deploy]
+    if: always()
+    steps:
+      - name: 📊 Pipeline Summary
+        run: |
+          echo "🎯 ML Pipeline Execution Summary"
+          echo "================================"
+          echo "Repository: ${{ github.repository }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Event: ${{ github.event_name }}"
+          echo "Actor: ${{ github.actor }}"
+          echo ""
+          echo "Job Results:"
+          echo "- Setup: ${{ needs.setup.result }}"
+          echo "- Install: ${{ needs.install.result }}"
+          echo "- Build: ${{ needs.build.result }}"
+          echo "- Test: ${{ needs.test.result }}"
+          echo "- Evaluate: ${{ needs.evaluate.result }}"
+          echo "- Compare: ${{ needs.compare.result }}"
+          echo "- Deploy: ${{ needs.deploy.result }}"
+          
+          # Determine overall status
+          if [[ "${{ needs.setup.result }}" == "success" && 
+                "${{ needs.install.result }}" == "success" && 
+                "${{ needs.build.result }}" == "success" && 
+                "${{ needs.test.result }}" == "success" && 
+                "${{ needs.evaluate.result }}" == "success" && 
+                "${{ needs.compare.result }}" == "success" ]]; then
+            echo ""
+            echo "✅ Pipeline executed successfully!"
+            if [[ "${{ needs.deploy.result }}" == "success" ]]; then
+              echo "🚀 Model deployed successfully!"
+            elif [[ "${{ needs.deploy.result }}" == "skipped" ]]; then
+              echo "⏭️ Deployment skipped (not main branch or PR)"
+            fi
+          else
+            echo ""
+            echo "❌ Pipeline failed!"
+            exit 1
+          fi
