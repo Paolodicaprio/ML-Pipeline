@@ -1,0 +1,26 @@
+data:
+  test_path: data/classification_test.csv
+  test_split: 0.1
+  train_path: data/classification_train.csv
+  validation_split: 0.2
+evaluation:
+  metrics:
+  - accuracy
+  - precision
+  - recall
+  - f1
+model:
+  algorithm: random_forest
+  name: ClassifierModel
+  type: classification
+  version: 2.0.0
+parameters:
+  max_depth: 15
+  min_samples_leaf: 2
+  min_samples_split: 5
+  n_estimators: 200
+training:
+  batch_size: 64
+  epochs: 150
+  learning_rate: 0.01
+  validation_split: 0.2

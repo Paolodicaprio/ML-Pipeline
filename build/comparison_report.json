@@ -1,1 +1,44 @@
-{"current_model": {"name": "ClassifierModel", "version": "2.0.0", "type": "classification"}, "previous_model": {"version": null}, "metrics_comparison": {}, "overall_improvement": null, "timestamp": "2025-07-25T09:52:23.620406"}
+{
+  "current_model": {
+    "name": "ClassifierModel",
+    "version": "2.0.0",
+    "type": "classification"
+  },
+  "v_best_model": {
+    "version": null
+  },
+  "metrics_comparison": {
+    "accuracy": {
+      "current": 0.89,
+      "v_best": null,
+      "absolute_diff": null,
+      "percentage_diff": null,
+      "is_improvement": null
+    },
+    "precision": {
+      "current": 0.8910871545703006,
+      "v_best": null,
+      "absolute_diff": null,
+      "percentage_diff": null,
+      "is_improvement": null
+    },
+    "recall": {
+      "current": 0.89,
+      "v_best": null,
+      "absolute_diff": null,
+      "percentage_diff": null,
+      "is_improvement": null
+    },
+    "f1": {
+      "current": 0.8897342995169083,
+      "v_best": null,
+      "absolute_diff": null,
+      "percentage_diff": null,
+      "is_improvement": null
+    }
+  },
+  "overall_improvement": true,
+  "is_new_v_best": true,
+  "timestamp": "2025-09-04T11:37:08.282781",
+  "commit_id": "9d9d56d5f8c0c2567a0dfa81f73f128838f93b35"
+}

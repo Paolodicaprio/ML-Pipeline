@@ -187,7 +187,7 @@ elif page == "🔄 Comparaison":
         if os.path.exists(comparison_path):
             comparison = load_data(comparison_path)
             if comparison:
-                # Informations sur le modèle actuel et précédent
+                # Informations sur le modèle actuel et v_best
                 st.subheader("📋 Informations sur les modèles")
                 col1, col2 = st.columns(2)
                 with col1:
@@ -197,20 +197,27 @@ elif page == "🔄 Comparaison":
                     st.text(f"Type: {comparison['current_model']['type']}")
                 
                 with col2:
-                    st.markdown("**Modèle précédent**")
-                    if comparison['previous_model']['version']:
-                        st.text(f"Version: {comparison['previous_model']['version']}")
+                    st.markdown("**Modèle v_best**")
+                    # Utiliser v_best_model au lieu de previous_model
+                    if 'v_best_model' in comparison and comparison['v_best_model']['version']:
+                        st.text(f"Version: {comparison['v_best_model']['version']}")
                     else:
-                        st.text("Pas de version précédente")
+                        st.text("Pas de version v_best précédente")
                 
                 # Résultat global de la comparaison
                 st.subheader("🏆 Résultat de la comparaison")
                 if comparison['overall_improvement'] is None:
-                    st.info("Pas de modèle précédent pour comparaison")
+                    st.info("Pas de modèle v_best précédent pour comparaison")
                 elif comparison['overall_improvement']:
-                    st.success("✅ Le modèle actuel est meilleur que le précédent!")
+                    st.success("✅ Le modèle actuel est meilleur que le v_best précédent!")
                 else:
-                    st.error("❌ Le modèle actuel n'est pas meilleur que le précédent")
+                    st.error("❌ Le modèle actuel n'est pas meilleur que le v_best précédent")
+                
+                # Afficher le statut v_best
+                if comparison.get('is_new_v_best', False):
+                    st.success("🌟 Ce modèle est devenu le nouveau v_best!")
+                else:
+                    st.info("📦 Le modèle v_best précédent a été conservé")
                 
                 # Détails de la comparaison des métriques
                 if comparison['metrics_comparison']:
@@ -219,34 +226,47 @@ elif page == "🔄 Comparaison":
                     # Créer un DataFrame pour la comparaison
                     metrics_data = []
                     for metric, values in comparison['metrics_comparison'].items():
-                        if values['previous'] is not None:
+                        if values['v_best'] is not None:
                             metrics_data.append({
                                 'Métrique': metric,
                                 'Actuel': values['current'],
-                                'Précédent': values['previous'],
+                                'V_Best': values['v_best'],
                                 'Différence': values['absolute_diff'],
                                 'Différence (%)': values['percentage_diff'],
                                 'Amélioration': '✅' if values['is_improvement'] else '❌'
+                            })
+                        else:
+                            # Premier modèle, pas de comparaison
+                            metrics_data.append({
+                                'Métrique': metric,
+                                'Actuel': values['current'],
+                                'V_Best': 'N/A',
+                                'Différence': 'N/A',
+                                'Différence (%)': 'N/A',
+                                'Amélioration': 'Premier modèle'
                             })
                     
                     if metrics_data:
                         df_comparison = pd.DataFrame(metrics_data)
                         st.dataframe(df_comparison)
                         
-                        # Graphique de comparaison
-                        fig, ax = plt.subplots(figsize=(10, 6))
-                        df_melt = pd.melt(
-                            df_comparison, 
-                            id_vars=['Métrique'], 
-                            value_vars=['Actuel', 'Précédent'],
-                            var_name='Version',
-                            value_name='Valeur'
-                        )
-                        sns.barplot(x='Métrique', y='Valeur', hue='Version', data=df_melt)
-                        plt.title('Comparaison des métriques entre versions')
-                        plt.xticks(rotation=45)
-                        plt.tight_layout()
-                        st.pyplot(fig)
+                        # Graphique de comparaison (seulement si on a des données v_best)
+                        comparable_data = [row for row in metrics_data if row['V_Best'] != 'N/A']
+                        if comparable_data:
+                            fig, ax = plt.subplots(figsize=(10, 6))
+                            df_comparable = pd.DataFrame(comparable_data)
+                            df_melt = pd.melt(
+                                df_comparable, 
+                                id_vars=['Métrique'], 
+                                value_vars=['Actuel', 'V_Best'],
+                                var_name='Version',
+                                value_name='Valeur'
+                            )
+                            sns.barplot(x='Métrique', y='Valeur', hue='Version', data=df_melt)
+                            plt.title('Comparaison des métriques entre versions')
+                            plt.xticks(rotation=45)
+                            plt.tight_layout()
+                            st.pyplot(fig)
             else:
                 st.warning("Impossible de charger le rapport de comparaison.")
         else:
@@ -259,7 +279,7 @@ elif page == "ℹ️ À propos":
     st.header("ℹ️ À propos")
     
     st.markdown("""
-    ## ML Pipeline CI/CD
+    ## ML Pipeline CI/CD avec système v_best
     
     Cette application fait partie d'un projet de pipeline CI/CD pour les modèles de machine learning.
     
@@ -267,7 +287,7 @@ elif page == "ℹ️ À propos":
     
     - **Automatisation**: Construction, test, évaluation et déploiement automatisés des modèles
     - **Métriques**: Calcul automatique des métriques pertinentes selon le type de modèle
-    - **Comparaison**: Comparaison des performances entre différentes versions des modèles
+    - **Système v_best**: Comparaison des performances et conservation du meilleur modèle
     - **Visualisation**: Visualisation des résultats et des métriques
     
     ### Types de modèles supportés
@@ -284,14 +304,21 @@ elif page == "ℹ️ À propos":
     1. **Build**: Construction et entraînement du modèle
     2. **Test**: Test du modèle sur des données non vues
     3. **Evaluate**: Évaluation des performances du modèle
-    4. **Compare**: Comparaison avec la version précédente
-    5. **Deploy**: Déploiement du modèle s'il y a une amélioration
+    4. **Compare**: Comparaison avec le modèle v_best
+    5. **Deploy**: Déploiement du modèle depuis v_best
+    
+    ### Système v_best
+    
+    - Le conteneur `v_best` conserve toujours la meilleure version du modèle
+    - Chaque nouveau modèle est comparé avec v_best
+    - Seuls les modèles avec >50% de métriques améliorées remplacent v_best
+    - Le déploiement se fait toujours depuis v_best
     """)
 
 # Pied de page
 st.sidebar.markdown("---")
 st.sidebar.info(
     "Cette application a été développée dans le cadre d'un projet académique "
-    "pour démontrer l'automatisation des workflows de machine learning."
+    "pour démontrer l'automatisation des workflows de machine learning avec système v_best."
 )
 st.sidebar.text(f"Date: {datetime.datetime.now().strftime('%Y-%m-%d')}")
