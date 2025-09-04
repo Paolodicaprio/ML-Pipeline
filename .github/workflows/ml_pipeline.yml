@@ -394,51 +394,51 @@ jobs:
           echo "📊 Comparison Results:"
           if [ -f "build/comparison_report.json" ]; then
             python -c "
-            import json
-            with open('build/comparison_report.json', 'r') as f:
-                report = json.load(f)
+          import json
+          with open('build/comparison_report.json', 'r') as f:
+            report = json.load(f)
             
-            current_model = report.get('current_model', {})
-            v_best_model = report.get('v_best_model', {})
+          current_model = report.get('current_model', {})
+          v_best_model = report.get('v_best_model', {})
             
-            print('🆚 Model Comparison:')
-            print(f'  Current Model: {current_model.get(\"name\", \"N/A\")} v{current_model.get(\"version\", \"N/A\")}')
-            print(f'  V_Best Model: v{v_best_model.get(\"version\", \"None\")}')
+          print('🆚 Model Comparison:')
+          print(f'  Current Model: {current_model.get(\"name\", \"N/A\")} v{current_model.get(\"version\", \"N/A\")}')
+          print(f'  V_Best Model: v{v_best_model.get(\"version\", \"None\")}')
             
-            print('📈 Metrics Comparison:')
-            metrics_comparison = report.get('metrics_comparison', {})
-            improvements = 0
-            total_metrics = 0
+          print('📈 Metrics Comparison:')
+          metrics_comparison = report.get('metrics_comparison', {})
+          improvements = 0
+          total_metrics = 0
             
-            for metric, data in metrics_comparison.items():
-                if data.get('v_best') is not None:
-                    current_val = data.get('current', 0)
-                    v_best_val = data.get('v_best', 0)
-                    improvement = data.get('is_improvement', False)
-                    percentage = data.get('percentage_diff', 0)
+          for metric, data in metrics_comparison.items():
+              if data.get('v_best') is not None:
+                current_val = data.get('current', 0)
+                v_best_val = data.get('v_best', 0)
+                improvement = data.get('is_improvement', False)
+                percentage = data.get('percentage_diff', 0)
+                   
+                status = '✅' if improvement else '❌'
+                print(f'  {status} {metric.upper()}: {current_val:.4f} vs {v_best_val:.4f} ({percentage:+.2f}%)')
                     
-                    status = '✅' if improvement else '❌'
-                    print(f'  {status} {metric.upper()}: {current_val:.4f} vs {v_best_val:.4f} ({percentage:+.2f}%)')
-                    
-                    if improvement:
-                        improvements += 1
-                    total_metrics += 1
-                else:
-                    current_val = data.get('current', 0)
-                    print(f'  🆕 {metric.upper()}: {current_val:.4f} (first model)')
+                if improvement:
+                  improvements += 1
+                total_metrics += 1
+              else:
+                current_val = data.get('current', 0)
+                print(f'  🆕 {metric.upper()}: {current_val:.4f} (first model)')
             
-            overall_improvement = report.get('overall_improvement', False)
-            is_new_v_best = report.get('is_new_v_best', False)
+          overall_improvement = report.get('overall_improvement', False)
+          is_new_v_best = report.get('is_new_v_best', False)
             
-            if total_metrics > 0:
-                improvement_ratio = improvements / total_metrics * 100
-                print(f'📊 Overall: {improvements}/{total_metrics} metrics improved ({improvement_ratio:.1f}%)')
+          if total_metrics > 0:
+            improvement_ratio = improvements / total_metrics * 100
+            print(f'📊 Overall: {improvements}/{total_metrics} metrics improved ({improvement_ratio:.1f}%)')
             
-            if is_new_v_best:
-                print('🌟 Result: NEW V_BEST MODEL!')
-            else:
-                print('📦 Result: V_Best model retained')
-            "
+          if is_new_v_best:
+            print('🌟 Result: NEW V_BEST MODEL!')
+          else:
+            print('📦 Result: V_Best model retained')
+          "
           else
             echo "❌ Comparison report missing"
             exit 1
