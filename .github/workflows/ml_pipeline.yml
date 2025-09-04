@@ -321,26 +321,26 @@ jobs:
         run: |
           echo "📈 Performance metrics summary:"
           if [ -f "build/evaluation_report.json" ]; then
-            python -c "import json
-            with open('build/evaluation_report.json', 'r') as f:
-                report = json.load(f)
-
-            print('🎯 Model Information:')
-            model_info = report.get('model_info', {})
-            print(f'  - Name: {model_info.get(\"model_name\", \"N/A\")}')
-            print(f'  - Version: {model_info.get(\"model_version\", \"N/A\")}')
-            print(f'  - Type: {model_info.get(\"model_type\", \"N/A\")}')
-
-            print('📊 Performance Metrics:')
-            metrics = report.get('metrics', {})
-            for metric, value in metrics.items():
-                print(f'  - {metric.upper()}: {value:.4f}')
-            "
-
-          else
-            echo "❌ Evaluation report missing"
-            exit 1
-          fi
+            python -c "
+          import json
+          with open('build/evaluation_report.json', 'r') as f:
+              report = json.load(f)
+            
+          print('🎯 Model Information:')
+          model_info = report.get('model_info', {})
+          print(f'  - Name: {model_info.get(\"model_name\", \"N/A\")}')
+          print(f'  - Version: {model_info.get(\"model_version\", \"N/A\")}')
+          print(f'  - Type: {model_info.get(\"model_type\", \"N/A\")}')
+            
+          print('📊 Performance Metrics:')
+          metrics = report.get('metrics', {})
+          for metric, value in metrics.items():
+              print(f'  - {metric.upper()}: {value:.4f}')
+          "
+              else
+                echo "❌ Evaluation report missing"
+                exit 1
+              fi
           
       - name: 📤 Upload evaluation report
         uses: actions/upload-artifact@v4
