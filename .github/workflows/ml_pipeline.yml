@@ -96,7 +96,7 @@ jobs:
           echo "🔍 Verifying critical imports..."
           python -c "
           import sys
-          critical_packages = ['numpy', 'pandas', 'scikit-learn', 'matplotlib', 'seaborn', 'yaml', 'streamlit']
+          critical_packages = ['numpy', 'pandas', 'sklearn', 'matplotlib', 'seaborn', 'yaml', 'streamlit']
           for package in critical_packages:
               try:
                   __import__(package)
