@@ -555,16 +555,16 @@ jobs:
           
           if [ -f "deploy/model_metadata.json" ]; then
             python -c "
-            import json
-            with open('deploy/model_metadata.json', 'r') as f:
-                metadata = json.load(f)
+          import json
+          with open('deploy/model_metadata.json', 'r') as f:
+            metadata = json.load(f)
             
-            print(f'- **Model Name**: {metadata.get(\"model_name\", \"N/A\")}')
-            print(f'- **Version**: {metadata.get(\"model_version\", \"N/A\")}')
-            print(f'- **Type**: {metadata.get(\"model_type\", \"N/A\")}')
-            print(f'- **Commit**: ${{ github.sha }}')
-            print(f'- **Branch**: ${{ github.ref_name }}')
-            " >> $GITHUB_STEP_SUMMARY
+          print(f'- **Model Name**: {metadata.get(\"model_name\", \"N/A\")}')
+          print(f'- **Version**: {metadata.get(\"model_version\", \"N/A\")}')
+          print(f'- **Type**: {metadata.get(\"model_type\", \"N/A\")}')
+          print(f'- **Commit**: ${{ github.sha }}')
+          print(f'- **Branch**: ${{ github.ref_name }}')
+          " >> $GITHUB_STEP_SUMMARY
           fi
           
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -572,19 +572,19 @@ jobs:
           
           if [ -f "build/comparison_report.json" ]; then
             python -c "
-            import json
-            with open('build/comparison_report.json', 'r') as f:
-                report = json.load(f)
+          import json
+          with open('build/comparison_report.json', 'r') as f:
+            report = json.load(f)
             
-            metrics_comparison = report.get('metrics_comparison', {})
-            for metric, data in metrics_comparison.items():
-                current_val = data.get('current', 0)
-                print(f'- **{metric.upper()}**: {current_val:.4f}')
+          metrics_comparison = report.get('metrics_comparison', {})
+          for metric, data in metrics_comparison.items():
+            current_val = data.get('current', 0)
+            print(f'- **{metric.upper()}**: {current_val:.4f}')
             
-            if report.get('is_new_v_best', False):
-                print('')
-                print('🌟 **This model became the new v_best!**')
-            " >> $GITHUB_STEP_SUMMARY
+          if report.get('is_new_v_best', False):
+            print('')
+            print('🌟 **This model became the new v_best!**')
+          " >> $GITHUB_STEP_SUMMARY
           fi
 
   notify:
