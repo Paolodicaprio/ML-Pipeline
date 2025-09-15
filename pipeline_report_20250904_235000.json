@@ -1,0 +1,84 @@
+{
+  "pipeline_status": "SUCCESS",
+  "start_time": "2025-09-04T23:49:32.736927",
+  "end_time": "2025-09-04T23:50:00.456538",
+  "total_duration_seconds": 27.719611,
+  "execution_steps": [
+    {
+      "step": "INSTALL_DEPS",
+      "status": "SUCCESS",
+      "duration": 2.728826,
+      "description": "Installation des d\u00e9pendances manquantes",
+      "timestamp": "2025-09-04T23:49:37.158139"
+    },
+    {
+      "step": "BUILD_MODEL",
+      "status": "SUCCESS",
+      "duration": 2.697344,
+      "description": "Construction et entra\u00eenement du mod\u00e8le",
+      "timestamp": "2025-09-04T23:49:39.898612"
+    },
+    {
+      "step": "TEST_MODEL",
+      "status": "SUCCESS",
+      "duration": 2.68258,
+      "description": "Test du mod\u00e8le sur les donn\u00e9es de test",
+      "timestamp": "2025-09-04T23:49:42.609108"
+    },
+    {
+      "step": "MONITOR_DRIFT",
+      "status": "FAILED",
+      "duration": 2.774167,
+      "description": "Surveillance du data drift",
+      "error": "Command 'python src/monitor_drift.py --config models/model_config.yml' returned non-zero exit status 1.",
+      "stderr": "2025-09-04 23:49:47,847 - __main__ - INFO - D\u00e9but de la surveillance du data drift\n2025-09-04 23:49:47,857 - __main__ - INFO - Donn\u00e9es de r\u00e9f\u00e9rence charg\u00e9es: 800 \u00e9chantillons, 10 caract\u00e9ristiques\n2025-09-04 23:49:47,857 - __main__ - ERROR - Erreur lors du chargement des nouvelles donn\u00e9es: _path_exists: path should be string, bytes, os.PathLike or integer, not NoneType\n2025-09-04 23:49:47,857 - __main__ - ERROR - Impossible de charger les nouvelles donn\u00e9es\n2025-09-04 23:49:47,857 - __main__ - ERROR - Surveillance du drift \u00e9chou\u00e9e ou drift alarmant d\u00e9tect\u00e9\n",
+      "timestamp": "2025-09-04T23:49:45.303949"
+    },
+    {
+      "step": "EVALUATE_MODEL",
+      "status": "SUCCESS",
+      "duration": 4.422752,
+      "description": "\u00c9valuation des performances du mod\u00e8le",
+      "timestamp": "2025-09-04T23:49:48.092177"
+    },
+    {
+      "step": "COMPARE_MODELS",
+      "status": "SUCCESS",
+      "duration": 1.349382,
+      "description": "Comparaison avec le mod\u00e8le v_best",
+      "timestamp": "2025-09-04T23:49:52.526332"
+    },
+    {
+      "step": "DEPLOY_MODEL",
+      "status": "SUCCESS",
+      "duration": 0.163478,
+      "description": "D\u00e9ploiement du mod\u00e8le",
+      "timestamp": "2025-09-04T23:49:53.883729"
+    },
+    {
+      "step": "DOCKER_DOWN",
+      "status": "SUCCESS",
+      "duration": 0.25491,
+      "description": "Arr\u00eat des services Docker existants",
+      "timestamp": "2025-09-04T23:49:54.119900"
+    },
+    {
+      "step": "DOCKER_UP",
+      "status": "SUCCESS",
+      "duration": 6.033562,
+      "description": "Construction et lancement des services Docker",
+      "timestamp": "2025-09-04T23:49:54.419185"
+    }
+  ],
+  "model_info": {
+    "algorithm": "random_forest",
+    "name": "ClassifierModel",
+    "type": "classification",
+    "version": "2.0.0"
+  },
+  "summary": {
+    "total_steps": 9,
+    "successful_steps": 8,
+    "failed_steps": 1
+  }
+}

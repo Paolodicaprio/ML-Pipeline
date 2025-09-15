@@ -1,0 +1,181 @@
+
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Rapport de Surveillance du Data Drift</title>
+                <style>
+                    body { font-family: Arial, sans-serif; margin: 20px; }
+                    .header { background-color: #f0f0f0; padding: 20px; border-radius: 5px; }
+                    .status { font-size: 24px; font-weight: bold; color: #44aa44; }
+                    .summary { margin: 20px 0; padding: 15px; background-color: #f9f9f9; border-radius: 5px; }
+                    .feature-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                    .feature-table th, .feature-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                    .feature-table th { background-color: #f2f2f2; }
+                    .drift-detected { background-color: #ffeeee; }
+                    .drift-ok { background-color: #eeffee; }
+                    .visualization { text-align: center; margin: 20px 0; }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <h1>Rapport de Surveillance du Data Drift</h1>
+                    <p><strong>Généré le:</strong> 2025-09-11 13:24:57</p>
+                    <p class="status">Statut Global: OK</p>
+                </div>
+                
+                <div class="summary">
+                    <h2>Résumé</h2>
+                    <ul>
+                        <li><strong>Nombre total de caractéristiques:</strong> 10</li>
+                        <li><strong>Caractéristiques avec drift détecté:</strong> 1</li>
+                        <li><strong>Pourcentage de drift:</strong> 10.0%</li>
+                        <li><strong>Échantillons de référence:</strong> 800</li>
+                        <li><strong>Nouveaux échantillons:</strong> 200</li>
+                        <li><strong>Seuil de détection:</strong> 0.05</li>
+                    </ul>
+                </div>
+                
+                <h2>Détails par Caractéristique</h2>
+                <table class="feature-table">
+                    <tr>
+                        <th>Caractéristique</th>
+                        <th>Drift Détecté</th>
+                        <th>Score de Drift</th>
+                        <th>Moyenne Réf.</th>
+                        <th>Moyenne Nouvelle</th>
+                        <th>Décalage Moyen</th>
+                        <th>KS p-value</th>
+                        <th>MW p-value</th>
+                    </tr>
+            
+                    <tr class="drift-ok">
+                        <td>feature_0</td>
+                        <td>NON</td>
+                        <td>0.3568</td>
+                        <td>-0.0311</td>
+                        <td>-0.2624</td>
+                        <td>0.1267</td>
+                        <td>0.8310</td>
+                        <td>0.3568</td>
+                    </tr>
+                
+                    <tr class="drift-ok">
+                        <td>feature_1</td>
+                        <td>NON</td>
+                        <td>0.7323</td>
+                        <td>1.1181</td>
+                        <td>1.1067</td>
+                        <td>0.0071</td>
+                        <td>0.7323</td>
+                        <td>0.9530</td>
+                    </tr>
+                
+                    <tr class="drift-ok">
+                        <td>feature_2</td>
+                        <td>NON</td>
+                        <td>0.9423</td>
+                        <td>-0.0178</td>
+                        <td>-0.0327</td>
+                        <td>0.0070</td>
+                        <td>0.9423</td>
+                        <td>0.9615</td>
+                    </tr>
+                
+                    <tr class="drift-ok">
+                        <td>feature_3</td>
+                        <td>NON</td>
+                        <td>0.6978</td>
+                        <td>-0.5827</td>
+                        <td>-0.5375</td>
+                        <td>0.0244</td>
+                        <td>0.9117</td>
+                        <td>0.6978</td>
+                    </tr>
+                
+                    <tr class="drift-ok">
+                        <td>feature_4</td>
+                        <td>NON</td>
+                        <td>0.2057</td>
+                        <td>-1.7921</td>
+                        <td>-1.4953</td>
+                        <td>0.0967</td>
+                        <td>0.3596</td>
+                        <td>0.2057</td>
+                    </tr>
+                
+                    <tr class="drift-ok">
+                        <td>feature_5</td>
+                        <td>NON</td>
+                        <td>0.4282</td>
+                        <td>-1.0580</td>
+                        <td>-0.9394</td>
+                        <td>0.0699</td>
+                        <td>0.8533</td>
+                        <td>0.4282</td>
+                    </tr>
+                
+                    <tr class="drift-ok">
+                        <td>feature_6</td>
+                        <td>NON</td>
+                        <td>0.4080</td>
+                        <td>-0.5432</td>
+                        <td>-0.6690</td>
+                        <td>0.0660</td>
+                        <td>0.4721</td>
+                        <td>0.4080</td>
+                    </tr>
+                
+                    <tr class="drift-ok">
+                        <td>feature_7</td>
+                        <td>NON</td>
+                        <td>0.6293</td>
+                        <td>0.5519</td>
+                        <td>0.4574</td>
+                        <td>0.0520</td>
+                        <td>0.8310</td>
+                        <td>0.6293</td>
+                    </tr>
+                
+                    <tr class="drift-detected">
+                        <td>feature_8</td>
+                        <td>OUI</td>
+                        <td>0.0326</td>
+                        <td>0.5991</td>
+                        <td>0.2806</td>
+                        <td>0.1794</td>
+                        <td>0.0782</td>
+                        <td>0.0326</td>
+                    </tr>
+                
+                    <tr class="drift-ok">
+                        <td>feature_9</td>
+                        <td>NON</td>
+                        <td>0.5866</td>
+                        <td>-1.5388</td>
+                        <td>-1.4558</td>
+                        <td>0.0416</td>
+                        <td>0.6262</td>
+                        <td>0.5866</td>
+                    </tr>
+                
+                </table>
+                
+                <div class="visualization">
+                    <h2>Visualisations</h2>
+            <p>Visualisations non disponibles</p>
+                </div>
+                
+                <div class="summary">
+                    <h2>Recommandations</h2>
+            
+                    <p style="color: #44aa44;"><strong>Situation Normale:</strong></p>
+                    <ul>
+                        <li>Moins de 20% des caractéristiques montrent un drift</li>
+                        <li>Continuer la surveillance régulière</li>
+                        <li>Le modèle peut continuer à être utilisé</li>
+                    </ul>
+                
+                </div>
+            </body>
+            </html>
+            

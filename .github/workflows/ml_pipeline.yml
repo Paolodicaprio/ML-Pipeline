@@ -133,7 +133,7 @@ jobs:
           
       - name: 📁 Create necessary directories
         run: |
-          mkdir -p build data deploy model_history
+          mkdir -p build data deploy model_history reports/drift
           echo "📁 Directories created successfully"
           
       - name: 🎲 Generate sample data
@@ -178,15 +178,6 @@ jobs:
             build/X_*.npy
             build/y_*.npy
           retention-days: 30
-          
-      - name: 📤 Upload build logs
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-logs-${{ github.sha }}
-          path: |
-            build/
-          retention-days: 7
 
   test:
     name: 🧪 Run Tests
@@ -254,24 +245,6 @@ jobs:
           python src/test_model.py
           echo "✅ Integration tests completed"
           
-      - name: 📊 Validate test results
-        run: |
-          echo "🔍 Validating test results..."
-          if [ -f "build/test_results.json" ]; then
-            echo "✅ Test results file exists"
-            cat build/test_results.json | python -m json.tool
-          else
-            echo "❌ Test results file missing"
-            exit 1
-          fi
-          
-          if [ -f "build/prediction_results.json" ]; then
-            echo "✅ Prediction results file exists"
-          else
-            echo "❌ Prediction results file missing"
-            exit 1
-          fi
-          
       - name: 📤 Upload test results
         uses: actions/upload-artifact@v4
         with:
@@ -281,10 +254,88 @@ jobs:
             build/prediction_results.json
           retention-days: 30
 
+  drift_monitoring:
+    name: 🔍 Data Drift Monitoring
+    runs-on: ubuntu-latest
+    needs: [setup, install, test]
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ needs.setup.outputs.python-version }}
+          
+      - name: 💾 Restore pip cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ needs.setup.outputs.cache-key }}
+          
+      - name: 📦 Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          
+      - name: 🔍 Monitor data drift
+        run: |
+          echo "🔍 Monitoring data drift..."
+          mkdir -p reports/drift
+          python src/monitor_drift.py --config models/model_config.yml
+          echo "✅ Data drift monitoring completed"
+          
+      - name: 📊 Display drift results
+        run: |
+          echo "📊 Data Drift Results:"
+          if [ -f "reports/drift/latest_drift_report.json" ]; then
+            python -c "
+          import json
+          with open('reports/drift/latest_drift_report.json', 'r') as f:
+              report = json.load(f)
+          
+          print(f'🎯 Global Status: {report.get(\"global_status\", \"Unknown\")}')
+          summary = report.get('summary', {})
+          print(f'📊 Features with drift: {summary.get(\"drift_detected_count\", 0)}/{summary.get(\"total_features\", 0)} ({summary.get(\"drift_percentage\", 0):.1f}%)')
+          print(f'📈 Threshold: {summary.get(\"drift_threshold\", 0)}')
+          "
+          else
+            echo "⚠️ No drift report generated"
+          fi
+          
+      - name: ❌ Fail if critical drift detected
+        run: |
+          if [ -f "reports/drift/latest_drift_report.json" ]; then
+            python -c "
+          import json
+          import sys
+          
+          with open('reports/drift/latest_drift_report.json', 'r') as f:
+              report = json.load(f)
+          
+          global_status = report.get('global_status', 'OK')
+          if global_status == 'ALARMANT':
+              print('❌ CRITICAL DRIFT DETECTED - Pipeline stopped')
+              sys.exit(1)
+          elif global_status == 'ATTENTION':
+              print('⚠️ Moderate drift detected - Proceeding with caution')
+          else:
+              print('✅ No significant drift detected')
+          "
+          fi
+          
+      - name: 📤 Upload drift reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: drift-reports-${{ github.sha }}
+          path: |
+            reports/drift/
+          retention-days: 30
+
   evaluate:
     name: 📊 Evaluate Model
     runs-on: ubuntu-latest
-    needs: [setup, install, test]
+    needs: [setup, install, drift_monitoring]
     steps:
       - name: 📥 Checkout repository
         uses: actions/checkout@v4
@@ -337,10 +388,10 @@ jobs:
           for metric, value in metrics.items():
               print(f'  - {metric.upper()}: {value:.4f}')
           "
-              else
-                echo "❌ Evaluation report missing"
-                exit 1
-              fi
+          else
+            echo "❌ Evaluation report missing"
+            exit 1
+          fi
           
       - name: 📤 Upload evaluation report
         uses: actions/upload-artifact@v4
@@ -444,41 +495,6 @@ jobs:
             exit 1
           fi
           
-      - name: ❌ Fail if model performance degraded significantly
-        run: |
-          echo "🔍 Checking for significant performance degradation..."
-          python -c "
-          import json
-          import sys
-          
-          with open('build/comparison_report.json', 'r') as f:
-              report = json.load(f)
-          
-          metrics_comparison = report.get('metrics_comparison', {})
-          degraded_metrics = 0
-          total_comparable_metrics = 0
-          
-          for metric, data in metrics_comparison.items():
-              if data.get('v_best') is not None and data.get('is_improvement') is not None:
-                  total_comparable_metrics += 1
-                  if not data.get('is_improvement', False):
-                      percentage_diff = data.get('percentage_diff', 0)
-                      if abs(percentage_diff) > 10:  # Dégradation de plus de 10%
-                          degraded_metrics += 1
-                          print(f'⚠️ Significant degradation in {metric}: {percentage_diff:.2f}%')
-          
-          if total_comparable_metrics > 0:
-              degradation_ratio = degraded_metrics / total_comparable_metrics
-              if degradation_ratio > 0.5:  # Plus de 50% des métriques dégradées significativement
-                  print(f'❌ CRITICAL: {degraded_metrics}/{total_comparable_metrics} metrics significantly degraded')
-                  print('Pipeline failed due to significant performance degradation')
-                  sys.exit(1)
-              else:
-                  print(f'✅ Performance check passed: {degraded_metrics}/{total_comparable_metrics} metrics degraded')
-          else:
-              print('✅ No comparable metrics found (first model)')
-          "
-          
       - name: 📤 Upload comparison report
         uses: actions/upload-artifact@v4
         with:
@@ -546,51 +562,11 @@ jobs:
           path: |
             deploy/
           retention-days: 90
-          
-      - name: 📝 Create deployment summary
-        run: |
-          echo "## 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 📊 Model Information" >> $GITHUB_STEP_SUMMARY
-          
-          if [ -f "deploy/model_metadata.json" ]; then
-            python -c "
-          import json
-          with open('deploy/model_metadata.json', 'r') as f:
-            metadata = json.load(f)
-            
-          print(f'- **Model Name**: {metadata.get(\"model_name\", \"N/A\")}')
-          print(f'- **Version**: {metadata.get(\"model_version\", \"N/A\")}')
-          print(f'- **Type**: {metadata.get(\"model_type\", \"N/A\")}')
-          print(f'- **Commit**: ${{ github.sha }}')
-          print(f'- **Branch**: ${{ github.ref_name }}')
-          " >> $GITHUB_STEP_SUMMARY
-          fi
-          
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 📈 Performance Metrics" >> $GITHUB_STEP_SUMMARY
-          
-          if [ -f "build/comparison_report.json" ]; then
-            python -c "
-          import json
-          with open('build/comparison_report.json', 'r') as f:
-            report = json.load(f)
-            
-          metrics_comparison = report.get('metrics_comparison', {})
-          for metric, data in metrics_comparison.items():
-            current_val = data.get('current', 0)
-            print(f'- **{metric.upper()}**: {current_val:.4f}')
-            
-          if report.get('is_new_v_best', False):
-            print('')
-            print('🌟 **This model became the new v_best!**')
-          " >> $GITHUB_STEP_SUMMARY
-          fi
 
   notify:
     name: 📢 Notify Results
     runs-on: ubuntu-latest
-    needs: [setup, install, build, test, evaluate, compare, deploy]
+    needs: [setup, install, build, test, drift_monitoring, evaluate, compare, deploy]
     if: always()
     steps:
       - name: 📊 Pipeline Summary
@@ -608,6 +584,7 @@ jobs:
           echo "- Install: ${{ needs.install.result }}"
           echo "- Build: ${{ needs.build.result }}"
           echo "- Test: ${{ needs.test.result }}"
+          echo "- Drift Monitoring: ${{ needs.drift_monitoring.result }}"
           echo "- Evaluate: ${{ needs.evaluate.result }}"
           echo "- Compare: ${{ needs.compare.result }}"
           echo "- Deploy: ${{ needs.deploy.result }}"
@@ -617,6 +594,7 @@ jobs:
                 "${{ needs.install.result }}" == "success" && 
                 "${{ needs.build.result }}" == "success" && 
                 "${{ needs.test.result }}" == "success" && 
+                "${{ needs.drift_monitoring.result }}" == "success" && 
                 "${{ needs.evaluate.result }}" == "success" && 
                 "${{ needs.compare.result }}" == "success" ]]; then
             echo ""

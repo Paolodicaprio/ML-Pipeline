@@ -5,40 +5,40 @@
     "type": "classification"
   },
   "v_best_model": {
-    "version": null
+    "version": "2.0.0"
   },
   "metrics_comparison": {
     "accuracy": {
       "current": 0.89,
-      "v_best": null,
-      "absolute_diff": null,
-      "percentage_diff": null,
-      "is_improvement": null
+      "v_best": 0.89,
+      "absolute_diff": 0.0,
+      "percentage_diff": 0.0,
+      "is_improvement": false
     },
     "precision": {
       "current": 0.8910871545703006,
-      "v_best": null,
-      "absolute_diff": null,
-      "percentage_diff": null,
-      "is_improvement": null
+      "v_best": 0.8910871545703006,
+      "absolute_diff": 0.0,
+      "percentage_diff": 0.0,
+      "is_improvement": false
     },
     "recall": {
       "current": 0.89,
-      "v_best": null,
-      "absolute_diff": null,
-      "percentage_diff": null,
-      "is_improvement": null
+      "v_best": 0.89,
+      "absolute_diff": 0.0,
+      "percentage_diff": 0.0,
+      "is_improvement": false
     },
     "f1": {
       "current": 0.8897342995169083,
-      "v_best": null,
-      "absolute_diff": null,
-      "percentage_diff": null,
-      "is_improvement": null
+      "v_best": 0.8897342995169083,
+      "absolute_diff": 0.0,
+      "percentage_diff": 0.0,
+      "is_improvement": false
     }
   },
-  "overall_improvement": true,
-  "is_new_v_best": true,
-  "timestamp": "2025-09-04T11:37:08.282781",
-  "commit_id": "9d9d56d5f8c0c2567a0dfa81f73f128838f93b35"
+  "overall_improvement": false,
+  "is_new_v_best": false,
+  "timestamp": "2025-09-11T13:25:05.054721",
+  "commit_id": "c5b4922d00c6610e90c74c117f23c4596a479a89"
 }

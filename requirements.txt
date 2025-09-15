@@ -9,3 +9,4 @@ gitpython==3.1.31
 streamlit==1.22.0
 Pillow==9.5.0
 pytest==8.2.0
+scipy>=1.11.0

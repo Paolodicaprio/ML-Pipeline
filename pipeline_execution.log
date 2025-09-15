@@ -1,0 +1,274 @@
+2025-09-04 23:43:54,462 - __main__ - INFO - Configuration chargée depuis models/model_config.yml
+2025-09-04 23:43:54,467 - __main__ - INFO - Dossiers créés avec succès
+2025-09-04 23:43:54,500 - __main__ - INFO - Configuration: models/model_config.yml
+2025-09-04 23:43:54,500 - __main__ - INFO - Modèle: ClassifierModel
+2025-09-04 23:44:04,189 - __main__ - ERROR - Packages manquants: scikit-learn, pyyaml
+2025-09-04 23:44:04,189 - __main__ - INFO - Installation des packages manquants...
+2025-09-04 23:44:08,127 - __main__ - INFO - Données d'entraînement trouvées: data/classification_train.csv
+2025-09-04 23:44:14,125 - __main__ - ERROR - Erreur:   File "E:\WORK\Mémoire\ml-pipeline-project\src\monitor_drift.py", line 178
+    viz_path = os.path.join(self.reports_dir, f"drift_visualizations_{datetime.now().strftime('%Y%m%d_%H%M%S'/images/driftvisualizations.jpg")
+                                                                                                                                            ^
+SyntaxError: f-string: expecting '}'
+
+2025-09-04 23:44:29,823 - __main__ - INFO - Configuration chargée depuis models/model_config.yml
+2025-09-04 23:44:29,834 - __main__ - INFO - Dossiers créés avec succès
+2025-09-04 23:44:29,845 - __main__ - INFO - Configuration: models/model_config.yml
+2025-09-04 23:44:29,846 - __main__ - INFO - Modèle: ClassifierModel
+2025-09-04 23:44:35,084 - __main__ - ERROR - Packages manquants: scikit-learn, pyyaml
+2025-09-04 23:44:35,087 - __main__ - INFO - Installation des packages manquants...
+2025-09-04 23:44:40,926 - __main__ - INFO - Données d'entraînement trouvées: data/classification_train.csv
+2025-09-04 23:44:47,464 - __main__ - ERROR - Erreur:   File "E:\WORK\Mémoire\ml-pipeline-project\src\monitor_drift.py", line 178
+    viz_path = os.path.join(self.reports_dir, f"drift_visualizations_{datetime.now().strftime('%Y%m%d_%H%M%S'/images/driftvisualizations.jpg")
+                                                                                                                                            ^
+SyntaxError: f-string: expecting '}'
+
+2025-09-04 23:47:41,814 - __main__ - INFO - Configuration chargée depuis models/model_config.yml
+2025-09-04 23:47:41,821 - __main__ - INFO - Dossiers créés avec succès
+2025-09-04 23:47:41,833 - __main__ - INFO - Configuration: models/model_config.yml
+2025-09-04 23:47:41,838 - __main__ - INFO - Modèle: ClassifierModel
+2025-09-04 23:47:47,108 - __main__ - ERROR - Packages manquants: scikit-learn, pyyaml
+2025-09-04 23:47:47,109 - __main__ - INFO - Installation des packages manquants...
+2025-09-04 23:47:50,271 - __main__ - INFO - Données d'entraînement trouvées: data/classification_train.csv
+2025-09-04 23:47:59,686 - __main__ - ERROR - Erreur: 2025-09-04 23:47:59,446 - __main__ - INFO - Début de la surveillance du data drift
+2025-09-04 23:47:59,446 - __main__ - INFO - Données de référence chargées: 800 échantillons, 10 caractéristiques
+2025-09-04 23:47:59,446 - __main__ - ERROR - Erreur lors du chargement des nouvelles données: _path_exists: path should be string, bytes, os.PathLike or integer, not NoneType
+2025-09-04 23:47:59,446 - __main__ - ERROR - Impossible de charger les nouvelles données
+2025-09-04 23:47:59,446 - __main__ - ERROR - Surveillance du drift échouée ou drift alarmant détecté
+
+2025-09-04 23:49:32,736 - __main__ - INFO - Configuration chargée depuis models/model_config.yml
+2025-09-04 23:49:32,736 - __main__ - INFO - Dossiers créés avec succès
+2025-09-04 23:49:32,745 - __main__ - INFO - Configuration: models/model_config.yml
+2025-09-04 23:49:32,750 - __main__ - INFO - Modèle: ClassifierModel
+2025-09-04 23:49:37,158 - __main__ - ERROR - Packages manquants: scikit-learn, pyyaml
+2025-09-04 23:49:37,158 - __main__ - INFO - Installation des packages manquants...
+2025-09-04 23:49:39,894 - __main__ - INFO - Données d'entraînement trouvées: data/classification_train.csv
+2025-09-04 23:49:48,086 - __main__ - ERROR - Erreur: 2025-09-04 23:49:47,847 - __main__ - INFO - Début de la surveillance du data drift
+2025-09-04 23:49:47,857 - __main__ - INFO - Données de référence chargées: 800 échantillons, 10 caractéristiques
+2025-09-04 23:49:47,857 - __main__ - ERROR - Erreur lors du chargement des nouvelles données: _path_exists: path should be string, bytes, os.PathLike or integer, not NoneType
+2025-09-04 23:49:47,857 - __main__ - ERROR - Impossible de charger les nouvelles données
+2025-09-04 23:49:47,857 - __main__ - ERROR - Surveillance du drift échouée ou drift alarmant détecté
+
+2025-09-05 00:04:02,429 - __main__ - INFO - Configuration chargée depuis models/model_config.yml
+2025-09-05 00:04:02,429 - __main__ - INFO - Dossiers créés avec succès
+2025-09-05 00:04:02,429 - __main__ - INFO - [START] Démarrage du pipeline ML complet
+2025-09-05 00:04:02,429 - __main__ - INFO - Configuration: models/model_config.yml
+2025-09-05 00:04:02,429 - __main__ - INFO - Modèle: ClassifierModel
+2025-09-05 00:04:02,429 - __main__ - INFO - [CHECK] Vérification des dépendances...
+2025-09-05 00:04:03,221 - __main__ - WARNING - [ERROR] scikit-learn: MANQUANT
+2025-09-05 00:04:04,746 - __main__ - WARNING - [ERROR] pyyaml: MANQUANT
+2025-09-05 00:04:06,925 - __main__ - ERROR - Packages manquants: scikit-learn, pyyaml
+2025-09-05 00:04:06,926 - __main__ - INFO - Installation des packages manquants...
+2025-09-05 00:04:06,926 - __main__ - INFO - [RUNNING] INSTALL_DEPS: Installation des dépendances manquantes
+2025-09-05 00:04:09,586 - __main__ - INFO - [SUCCESS] INSTALL_DEPS terminé avec succès (2.66s)
+2025-09-05 00:04:09,586 - __main__ - INFO - [SUCCESS] Toutes les dépendances sont disponibles
+2025-09-05 00:04:09,586 - __main__ - INFO - Données d'entraînement trouvées: data/classification_train.csv
+2025-09-05 00:04:09,586 - __main__ - INFO - [RUNNING] BUILD_MODEL: Construction et entraînement du modèle
+2025-09-05 00:04:12,255 - __main__ - INFO - [SUCCESS] BUILD_MODEL terminé avec succès (2.67s)
+2025-09-05 00:04:12,255 - __main__ - INFO - [RUNNING] TEST_MODEL: Test du modèle sur les données de test
+2025-09-05 00:04:14,697 - __main__ - INFO - [SUCCESS] TEST_MODEL terminé avec succès (2.44s)
+2025-09-05 00:04:14,697 - __main__ - INFO - [RUNNING] MONITOR_DRIFT: Surveillance du data drift
+2025-09-05 00:04:21,435 - __main__ - INFO - [SUCCESS] MONITOR_DRIFT terminé avec succès (6.74s)
+2025-09-05 00:04:21,435 - __main__ - INFO - [RUNNING] EVALUATE_MODEL: Évaluation des performances du modèle
+2025-09-05 00:04:25,495 - __main__ - INFO - [SUCCESS] EVALUATE_MODEL terminé avec succès (4.06s)
+2025-09-05 00:04:25,495 - __main__ - INFO - [RUNNING] COMPARE_MODELS: Comparaison avec le modèle v_best
+2025-09-05 00:04:26,998 - __main__ - INFO - [SUCCESS] COMPARE_MODELS terminé avec succès (1.50s)
+2025-09-05 00:04:26,999 - __main__ - INFO - [RUNNING] DEPLOY_MODEL: Déploiement du modèle
+2025-09-05 00:04:27,155 - __main__ - INFO - [SUCCESS] DEPLOY_MODEL terminé avec succès (0.16s)
+2025-09-05 00:04:27,155 - __main__ - INFO - [DOCKER] Lancement des services Docker...
+2025-09-05 00:04:27,213 - __main__ - INFO - [RUNNING] DOCKER_DOWN: Arrêt des services Docker existants
+2025-09-05 00:04:29,664 - __main__ - INFO - [SUCCESS] DOCKER_DOWN terminé avec succès (2.45s)
+2025-09-05 00:04:29,664 - __main__ - INFO - [RUNNING] DOCKER_UP: Construction et lancement des services Docker
+2025-09-05 00:04:35,822 - __main__ - INFO - [SUCCESS] DOCKER_UP terminé avec succès (6.16s)
+2025-09-05 00:04:35,822 - __main__ - INFO - [REPORT] Rapport de pipeline généré: pipeline_report_20250905_000435.json
+2025-09-05 00:04:35,826 - __main__ - INFO - [CELEBRATE] Pipeline ML exécuté avec succès!
+2025-09-05 00:04:35,827 - __main__ - INFO - [REPORT] Rapport: pipeline_report_20250905_000435.json
+2025-09-05 00:04:35,827 - __main__ - INFO - [TIME] Durée totale: 33.40s
+2025-09-05 00:04:35,827 - __main__ - INFO - [SUCCESS] Pipeline terminé avec succès
+2025-09-05 00:07:38,643 - __main__ - INFO - Configuration chargée depuis models/model_config.yml
+2025-09-05 00:07:38,643 - __main__ - INFO - Dossiers créés avec succès
+2025-09-05 00:07:38,643 - __main__ - INFO - [START] Démarrage du pipeline ML complet
+2025-09-05 00:07:38,646 - __main__ - INFO - Configuration: models/model_config.yml
+2025-09-05 00:07:38,646 - __main__ - INFO - Modèle: ClassifierModel
+2025-09-05 00:07:38,646 - __main__ - INFO - [CHECK] Vérification des dépendances...
+2025-09-05 00:07:39,651 - __main__ - WARNING - [ERROR] scikit-learn: MANQUANT
+2025-09-05 00:07:41,306 - __main__ - WARNING - [ERROR] pyyaml: MANQUANT
+2025-09-05 00:07:43,342 - __main__ - ERROR - Packages manquants: scikit-learn, pyyaml
+2025-09-05 00:07:43,342 - __main__ - INFO - Installation des packages manquants...
+2025-09-05 00:07:43,343 - __main__ - INFO - [RUNNING] INSTALL_DEPS: Installation des dépendances manquantes
+2025-09-05 00:07:46,061 - __main__ - INFO - [SUCCESS] INSTALL_DEPS terminé avec succès (2.72s)
+2025-09-05 00:07:46,061 - __main__ - INFO - [SUCCESS] Toutes les dépendances sont disponibles
+2025-09-05 00:07:46,061 - __main__ - INFO - Données d'entraînement trouvées: data/classification_train.csv
+2025-09-05 00:07:46,061 - __main__ - INFO - [RUNNING] BUILD_MODEL: Construction et entraînement du modèle
+2025-09-05 00:07:48,815 - __main__ - INFO - [SUCCESS] BUILD_MODEL terminé avec succès (2.75s)
+2025-09-05 00:07:48,815 - __main__ - INFO - [RUNNING] TEST_MODEL: Test du modèle sur les données de test
+2025-09-05 00:07:51,238 - __main__ - INFO - [SUCCESS] TEST_MODEL terminé avec succès (2.42s)
+2025-09-05 00:07:51,239 - __main__ - INFO - [RUNNING] MONITOR_DRIFT: Surveillance du data drift
+2025-09-05 00:07:57,558 - __main__ - INFO - [SUCCESS] MONITOR_DRIFT terminé avec succès (6.32s)
+2025-09-05 00:07:57,559 - __main__ - INFO - [RUNNING] EVALUATE_MODEL: Évaluation des performances du modèle
+2025-09-05 00:08:01,471 - __main__ - INFO - [SUCCESS] EVALUATE_MODEL terminé avec succès (3.91s)
+2025-09-05 00:08:01,471 - __main__ - INFO - [RUNNING] COMPARE_MODELS: Comparaison avec le modèle v_best
+2025-09-05 00:08:02,959 - __main__ - INFO - [SUCCESS] COMPARE_MODELS terminé avec succès (1.49s)
+2025-09-05 00:08:02,959 - __main__ - INFO - [RUNNING] DEPLOY_MODEL: Déploiement du modèle
+2025-09-05 00:08:03,118 - __main__ - INFO - [SUCCESS] DEPLOY_MODEL terminé avec succès (0.16s)
+2025-09-05 00:08:03,119 - __main__ - INFO - [DOCKER] Lancement des services Docker...
+2025-09-05 00:08:03,190 - __main__ - INFO - [RUNNING] DOCKER_DOWN: Arrêt des services Docker existants
+2025-09-05 00:08:05,392 - __main__ - INFO - [SUCCESS] DOCKER_DOWN terminé avec succès (2.20s)
+2025-09-05 00:08:05,393 - __main__ - INFO - [RUNNING] DOCKER_UP: Construction et lancement des services Docker
+2025-09-05 00:08:10,299 - __main__ - INFO - [SUCCESS] DOCKER_UP terminé avec succès (4.91s)
+2025-09-05 00:08:10,302 - __main__ - INFO - [REPORT] Rapport de pipeline généré: pipeline_report_20250905_000810.json
+2025-09-05 00:08:10,304 - __main__ - INFO - [CELEBRATE] Pipeline ML exécuté avec succès!
+2025-09-05 00:08:10,304 - __main__ - INFO - [REPORT] Rapport: pipeline_report_20250905_000810.json
+2025-09-05 00:08:10,304 - __main__ - INFO - [TIME] Durée totale: 31.66s
+2025-09-05 00:08:10,304 - __main__ - INFO - [SUCCESS] Pipeline terminé avec succès
+2025-09-07 23:44:57,239 - __main__ - INFO - Configuration chargée depuis models/model_config.yml
+2025-09-07 23:44:57,239 - __main__ - INFO - Dossiers créés avec succès
+2025-09-07 23:44:57,239 - __main__ - INFO - [START] Démarrage du pipeline ML complet
+2025-09-07 23:44:57,239 - __main__ - INFO - Configuration: models/model_config.yml
+2025-09-07 23:44:57,239 - __main__ - INFO - Modèle: ClassifierModel
+2025-09-07 23:44:57,239 - __main__ - INFO - [CHECK] Vérification des dépendances...
+2025-09-07 23:45:01,521 - __main__ - WARNING - [ERROR] scikit-learn: MANQUANT
+2025-09-07 23:45:08,785 - __main__ - WARNING - [ERROR] pyyaml: MANQUANT
+2025-09-07 23:45:14,603 - __main__ - ERROR - Packages manquants: scikit-learn, pyyaml
+2025-09-07 23:45:14,603 - __main__ - INFO - Installation des packages manquants...
+2025-09-07 23:45:14,603 - __main__ - INFO - [RUNNING] INSTALL_DEPS: Installation des dépendances manquantes
+2025-09-07 23:45:21,153 - __main__ - INFO - [SUCCESS] INSTALL_DEPS terminé avec succès (6.55s)
+2025-09-07 23:45:21,153 - __main__ - INFO - [SUCCESS] Toutes les dépendances sont disponibles
+2025-09-07 23:45:21,153 - __main__ - INFO - Données d'entraînement trouvées: data/classification_train.csv
+2025-09-07 23:45:21,153 - __main__ - INFO - [RUNNING] BUILD_MODEL: Construction et entraînement du modèle
+2025-09-07 23:45:25,754 - __main__ - INFO - [SUCCESS] BUILD_MODEL terminé avec succès (4.60s)
+2025-09-07 23:45:25,754 - __main__ - INFO - [RUNNING] TEST_MODEL: Test du modèle sur les données de test
+2025-09-07 23:45:27,871 - __main__ - INFO - [SUCCESS] TEST_MODEL terminé avec succès (2.12s)
+2025-09-07 23:45:27,871 - __main__ - INFO - [RUNNING] MONITOR_DRIFT: Surveillance du data drift
+2025-09-07 23:45:34,079 - __main__ - INFO - [SUCCESS] MONITOR_DRIFT terminé avec succès (6.21s)
+2025-09-07 23:45:34,079 - __main__ - INFO - [RUNNING] EVALUATE_MODEL: Évaluation des performances du modèle
+2025-09-07 23:45:37,905 - __main__ - INFO - [SUCCESS] EVALUATE_MODEL terminé avec succès (3.83s)
+2025-09-07 23:45:37,905 - __main__ - INFO - [RUNNING] COMPARE_MODELS: Comparaison avec le modèle v_best
+2025-09-07 23:45:39,557 - __main__ - INFO - [SUCCESS] COMPARE_MODELS terminé avec succès (1.65s)
+2025-09-07 23:45:39,557 - __main__ - INFO - [RUNNING] DEPLOY_MODEL: Déploiement du modèle
+2025-09-07 23:45:39,728 - __main__ - INFO - [SUCCESS] DEPLOY_MODEL terminé avec succès (0.17s)
+2025-09-07 23:45:39,728 - __main__ - INFO - [DOCKER] Lancement des services Docker...
+2025-09-07 23:45:39,911 - __main__ - INFO - [RUNNING] DOCKER_DOWN: Arrêt des services Docker existants
+2025-09-07 23:45:40,369 - __main__ - ERROR - [ERROR] DOCKER_DOWN échoué: Command 'docker-compose down' returned non-zero exit status 1.
+2025-09-07 23:45:40,369 - __main__ - ERROR - Erreur: error during connect: Get "http://%2F%2F.%2Fpipe%2FdockerDesktopLinuxEngine/v1.51/containers/json?all=1&filters=%7B%22label%22%3A%7B%22com.docker.compose.config-hash%22%3Atrue%2C%22com.docker.compose.oneoff%3DFalse%22%3Atrue%2C%22com.docker.compose.project%3Dml-pipeline-project%22%3Atrue%7D%7D": open //./pipe/dockerDesktopLinuxEngine: Le fichier spÃ©cifiÃ© est introuvable.
+
+2025-09-07 23:45:40,369 - __main__ - INFO - [RUNNING] DOCKER_UP: Construction et lancement des services Docker
+2025-09-07 23:45:40,776 - __main__ - ERROR - [ERROR] DOCKER_UP échoué: Command 'docker-compose up -d --build' returned non-zero exit status 1.
+2025-09-07 23:45:40,776 - __main__ - ERROR - Erreur: unable to get image 'ml-pipeline-project-api': error during connect: Get "http://%2F%2F.%2Fpipe%2FdockerDesktopLinuxEngine/v1.51/images/ml-pipeline-project-api/json": open //./pipe/dockerDesktopLinuxEngine: Le fichier spÃ©cifiÃ© est introuvable.
+
+2025-09-07 23:45:40,778 - __main__ - INFO - [REPORT] Rapport de pipeline généré: pipeline_report_20250907_234540.json
+2025-09-07 23:45:40,778 - __main__ - INFO - [CELEBRATE] Pipeline ML exécuté avec succès!
+2025-09-07 23:45:40,778 - __main__ - INFO - [REPORT] Rapport: pipeline_report_20250907_234540.json
+2025-09-07 23:45:40,778 - __main__ - INFO - [TIME] Durée totale: 43.54s
+2025-09-07 23:45:40,786 - __main__ - INFO - [SUCCESS] Pipeline terminé avec succès
+2025-09-07 23:48:11,901 - __main__ - INFO - Configuration chargée depuis models/model_config.yml
+2025-09-07 23:48:11,903 - __main__ - INFO - Dossiers créés avec succès
+2025-09-07 23:48:11,903 - __main__ - INFO - [START] Démarrage du pipeline ML complet
+2025-09-07 23:48:11,903 - __main__ - INFO - Configuration: models/model_config.yml
+2025-09-07 23:48:11,903 - __main__ - INFO - Modèle: ClassifierModel
+2025-09-07 23:48:11,903 - __main__ - INFO - [CHECK] Vérification des dépendances...
+2025-09-07 23:48:12,603 - __main__ - WARNING - [ERROR] scikit-learn: MANQUANT
+2025-09-07 23:48:14,003 - __main__ - WARNING - [ERROR] pyyaml: MANQUANT
+2025-09-07 23:48:16,094 - __main__ - ERROR - Packages manquants: scikit-learn, pyyaml
+2025-09-07 23:48:16,094 - __main__ - INFO - Installation des packages manquants...
+2025-09-07 23:48:16,094 - __main__ - INFO - [RUNNING] INSTALL_DEPS: Installation des dépendances manquantes
+2025-09-07 23:48:19,205 - __main__ - INFO - [SUCCESS] INSTALL_DEPS terminé avec succès (3.11s)
+2025-09-07 23:48:19,205 - __main__ - INFO - [SUCCESS] Toutes les dépendances sont disponibles
+2025-09-07 23:48:19,205 - __main__ - INFO - Données d'entraînement trouvées: data/classification_train.csv
+2025-09-07 23:48:19,205 - __main__ - INFO - [RUNNING] BUILD_MODEL: Construction et entraînement du modèle
+2025-09-07 23:48:22,220 - __main__ - INFO - [SUCCESS] BUILD_MODEL terminé avec succès (3.01s)
+2025-09-07 23:48:22,220 - __main__ - INFO - [RUNNING] TEST_MODEL: Test du modèle sur les données de test
+2025-09-07 23:48:24,728 - __main__ - INFO - [SUCCESS] TEST_MODEL terminé avec succès (2.51s)
+2025-09-07 23:48:24,728 - __main__ - INFO - [RUNNING] MONITOR_DRIFT: Surveillance du data drift
+2025-09-07 23:48:30,698 - __main__ - INFO - [SUCCESS] MONITOR_DRIFT terminé avec succès (5.97s)
+2025-09-07 23:48:30,702 - __main__ - INFO - [RUNNING] EVALUATE_MODEL: Évaluation des performances du modèle
+2025-09-07 23:48:34,829 - __main__ - INFO - [SUCCESS] EVALUATE_MODEL terminé avec succès (4.13s)
+2025-09-07 23:48:34,829 - __main__ - INFO - [RUNNING] COMPARE_MODELS: Comparaison avec le modèle v_best
+2025-09-07 23:48:36,460 - __main__ - INFO - [SUCCESS] COMPARE_MODELS terminé avec succès (1.63s)
+2025-09-07 23:48:36,460 - __main__ - INFO - [RUNNING] DEPLOY_MODEL: Déploiement du modèle
+2025-09-07 23:48:36,619 - __main__ - INFO - [SUCCESS] DEPLOY_MODEL terminé avec succès (0.16s)
+2025-09-07 23:48:36,620 - __main__ - INFO - [DOCKER] Lancement des services Docker...
+2025-09-07 23:48:36,728 - __main__ - INFO - [RUNNING] DOCKER_DOWN: Arrêt des services Docker existants
+2025-09-07 23:48:37,038 - __main__ - ERROR - [ERROR] DOCKER_DOWN échoué: Command 'docker-compose down' returned non-zero exit status 1.
+2025-09-07 23:48:37,038 - __main__ - ERROR - Erreur: error during connect: Get "http://%2F%2F.%2Fpipe%2FdockerDesktopLinuxEngine/v1.51/containers/json?all=1&filters=%7B%22label%22%3A%7B%22com.docker.compose.config-hash%22%3Atrue%2C%22com.docker.compose.oneoff%3DFalse%22%3Atrue%2C%22com.docker.compose.project%3Dml-pipeline-project%22%3Atrue%7D%7D": open //./pipe/dockerDesktopLinuxEngine: Le fichier spÃ©cifiÃ© est introuvable.
+
+2025-09-07 23:48:37,038 - __main__ - INFO - [RUNNING] DOCKER_UP: Construction et lancement des services Docker
+2025-09-07 23:48:37,366 - __main__ - ERROR - [ERROR] DOCKER_UP échoué: Command 'docker-compose up -d --build' returned non-zero exit status 1.
+2025-09-07 23:48:37,366 - __main__ - ERROR - Erreur: unable to get image 'ml-pipeline-project-streamlit': error during connect: Get "http://%2F%2F.%2Fpipe%2FdockerDesktopLinuxEngine/v1.51/images/ml-pipeline-project-streamlit/json": open //./pipe/dockerDesktopLinuxEngine: Le fichier spÃ©cifiÃ© est introuvable.
+
+2025-09-07 23:48:37,366 - __main__ - INFO - [REPORT] Rapport de pipeline généré: pipeline_report_20250907_234837.json
+2025-09-07 23:48:37,366 - __main__ - INFO - [CELEBRATE] Pipeline ML exécuté avec succès!
+2025-09-07 23:48:37,366 - __main__ - INFO - [REPORT] Rapport: pipeline_report_20250907_234837.json
+2025-09-07 23:48:37,366 - __main__ - INFO - [TIME] Durée totale: 25.46s
+2025-09-07 23:48:37,366 - __main__ - INFO - [SUCCESS] Pipeline terminé avec succès
+2025-09-07 23:50:54,983 - __main__ - INFO - Configuration chargée depuis models/model_config.yml
+2025-09-07 23:50:54,983 - __main__ - INFO - Dossiers créés avec succès
+2025-09-07 23:50:54,983 - __main__ - INFO - [START] Démarrage du pipeline ML complet
+2025-09-07 23:50:54,983 - __main__ - INFO - Configuration: models/model_config.yml
+2025-09-07 23:50:54,983 - __main__ - INFO - Modèle: ClassifierModel
+2025-09-07 23:50:54,983 - __main__ - INFO - [CHECK] Vérification des dépendances...
+2025-09-07 23:50:56,578 - __main__ - WARNING - [ERROR] scikit-learn: MANQUANT
+2025-09-07 23:50:59,023 - __main__ - WARNING - [ERROR] pyyaml: MANQUANT
+2025-09-07 23:51:01,642 - __main__ - ERROR - Packages manquants: scikit-learn, pyyaml
+2025-09-07 23:51:01,642 - __main__ - INFO - Installation des packages manquants...
+2025-09-07 23:51:01,642 - __main__ - INFO - [RUNNING] INSTALL_DEPS: Installation des dépendances manquantes
+2025-09-07 23:51:04,669 - __main__ - INFO - [SUCCESS] INSTALL_DEPS terminé avec succès (3.03s)
+2025-09-07 23:51:04,669 - __main__ - INFO - [SUCCESS] Toutes les dépendances sont disponibles
+2025-09-07 23:51:04,669 - __main__ - INFO - Données d'entraînement trouvées: data/classification_train.csv
+2025-09-07 23:51:04,669 - __main__ - INFO - [RUNNING] BUILD_MODEL: Construction et entraînement du modèle
+2025-09-07 23:51:07,758 - __main__ - INFO - [SUCCESS] BUILD_MODEL terminé avec succès (3.09s)
+2025-09-07 23:51:07,758 - __main__ - INFO - [RUNNING] TEST_MODEL: Test du modèle sur les données de test
+2025-09-07 23:51:10,328 - __main__ - INFO - [SUCCESS] TEST_MODEL terminé avec succès (2.57s)
+2025-09-07 23:51:10,330 - __main__ - INFO - [RUNNING] MONITOR_DRIFT: Surveillance du data drift
+2025-09-07 23:51:17,568 - __main__ - INFO - [SUCCESS] MONITOR_DRIFT terminé avec succès (7.24s)
+2025-09-07 23:51:17,569 - __main__ - INFO - [RUNNING] EVALUATE_MODEL: Évaluation des performances du modèle
+2025-09-07 23:51:21,545 - __main__ - INFO - [SUCCESS] EVALUATE_MODEL terminé avec succès (3.98s)
+2025-09-07 23:51:21,545 - __main__ - INFO - [RUNNING] COMPARE_MODELS: Comparaison avec le modèle v_best
+2025-09-07 23:51:23,012 - __main__ - INFO - [SUCCESS] COMPARE_MODELS terminé avec succès (1.47s)
+2025-09-07 23:51:23,012 - __main__ - INFO - [RUNNING] DEPLOY_MODEL: Déploiement du modèle
+2025-09-07 23:51:23,207 - __main__ - INFO - [SUCCESS] DEPLOY_MODEL terminé avec succès (0.20s)
+2025-09-07 23:51:23,207 - __main__ - INFO - [DOCKER] Lancement des services Docker...
+2025-09-07 23:51:23,279 - __main__ - INFO - [RUNNING] DOCKER_DOWN: Arrêt des services Docker existants
+2025-09-07 23:51:25,967 - __main__ - INFO - [SUCCESS] DOCKER_DOWN terminé avec succès (2.69s)
+2025-09-07 23:51:25,967 - __main__ - INFO - [RUNNING] DOCKER_UP: Construction et lancement des services Docker
+2025-09-07 23:51:33,380 - __main__ - INFO - [SUCCESS] DOCKER_UP terminé avec succès (7.41s)
+2025-09-07 23:51:33,380 - __main__ - INFO - [REPORT] Rapport de pipeline généré: pipeline_report_20250907_235133.json
+2025-09-07 23:51:33,382 - __main__ - INFO - [CELEBRATE] Pipeline ML exécuté avec succès!
+2025-09-07 23:51:33,382 - __main__ - INFO - [REPORT] Rapport: pipeline_report_20250907_235133.json
+2025-09-07 23:51:33,382 - __main__ - INFO - [TIME] Durée totale: 38.40s
+2025-09-07 23:51:33,382 - __main__ - INFO - [SUCCESS] Pipeline terminé avec succès
+2025-09-11 13:24:32,747 - __main__ - INFO - Configuration chargée depuis models/model_config.yml
+2025-09-11 13:24:32,752 - __main__ - INFO - Dossiers créés avec succès
+2025-09-11 13:24:32,752 - __main__ - INFO - [START] Démarrage du pipeline ML complet
+2025-09-11 13:24:32,753 - __main__ - INFO - Configuration: models/model_config.yml
+2025-09-11 13:24:32,753 - __main__ - INFO - Modèle: ClassifierModel
+2025-09-11 13:24:32,754 - __main__ - INFO - [CHECK] Vérification des dépendances...
+2025-09-11 13:24:33,528 - __main__ - WARNING - [ERROR] scikit-learn: MANQUANT
+2025-09-11 13:24:35,109 - __main__ - WARNING - [ERROR] pyyaml: MANQUANT
+2025-09-11 13:24:41,890 - __main__ - ERROR - Packages manquants: scikit-learn, pyyaml
+2025-09-11 13:24:41,890 - __main__ - INFO - Installation des packages manquants...
+2025-09-11 13:24:41,890 - __main__ - INFO - [RUNNING] INSTALL_DEPS: Installation des dépendances manquantes
+2025-09-11 13:24:44,711 - __main__ - INFO - [SUCCESS] INSTALL_DEPS terminé avec succès (2.82s)
+2025-09-11 13:24:44,712 - __main__ - INFO - [SUCCESS] Toutes les dépendances sont disponibles
+2025-09-11 13:24:44,712 - __main__ - INFO - Données d'entraînement trouvées: data/classification_train.csv
+2025-09-11 13:24:44,713 - __main__ - INFO - [RUNNING] BUILD_MODEL: Construction et entraînement du modèle
+2025-09-11 13:24:48,801 - __main__ - INFO - [SUCCESS] BUILD_MODEL terminé avec succès (4.09s)
+2025-09-11 13:24:48,801 - __main__ - INFO - [RUNNING] TEST_MODEL: Test du modèle sur les données de test
+2025-09-11 13:24:51,283 - __main__ - INFO - [SUCCESS] TEST_MODEL terminé avec succès (2.48s)
+2025-09-11 13:24:51,283 - __main__ - INFO - [RUNNING] MONITOR_DRIFT: Surveillance du data drift
+2025-09-11 13:24:58,472 - __main__ - INFO - [SUCCESS] MONITOR_DRIFT terminé avec succès (7.19s)
+2025-09-11 13:24:58,472 - __main__ - INFO - [RUNNING] EVALUATE_MODEL: Évaluation des performances du modèle
+2025-09-11 13:25:03,322 - __main__ - INFO - [SUCCESS] EVALUATE_MODEL terminé avec succès (4.85s)
+2025-09-11 13:25:03,323 - __main__ - INFO - [RUNNING] COMPARE_MODELS: Comparaison avec le modèle v_best
+2025-09-11 13:25:05,260 - __main__ - INFO - [SUCCESS] COMPARE_MODELS terminé avec succès (1.94s)
+2025-09-11 13:25:05,261 - __main__ - INFO - [RUNNING] DEPLOY_MODEL: Déploiement du modèle
+2025-09-11 13:25:05,594 - __main__ - INFO - [SUCCESS] DEPLOY_MODEL terminé avec succès (0.33s)
+2025-09-11 13:25:05,594 - __main__ - INFO - [DOCKER] Lancement des services Docker...
+2025-09-11 13:25:05,667 - __main__ - INFO - [RUNNING] DOCKER_DOWN: Arrêt des services Docker existants
+2025-09-11 13:25:14,228 - __main__ - INFO - [SUCCESS] DOCKER_DOWN terminé avec succès (8.56s)
+2025-09-11 13:25:14,228 - __main__ - INFO - [RUNNING] DOCKER_UP: Construction et lancement des services Docker
+2025-09-11 13:28:32,074 - __main__ - INFO - [SUCCESS] DOCKER_UP terminé avec succès (197.85s)
+2025-09-11 13:28:32,078 - __main__ - INFO - [REPORT] Rapport de pipeline généré: pipeline_report_20250911_132832.json
+2025-09-11 13:28:32,082 - __main__ - INFO - [CELEBRATE] Pipeline ML exécuté avec succès!
+2025-09-11 13:28:32,082 - __main__ - INFO - [REPORT] Rapport: pipeline_report_20250911_132832.json
+2025-09-11 13:28:32,083 - __main__ - INFO - [TIME] Durée totale: 239.33s
+2025-09-11 13:28:32,083 - __main__ - INFO - [SUCCESS] Pipeline terminé avec succès

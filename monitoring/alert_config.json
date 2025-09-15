@@ -1,0 +1,43 @@
+{
+  "thresholds": {
+    "api_response_time": {
+      "metric_name": "api_response_time",
+      "warning_threshold": 1.0,
+      "critical_threshold": 3.0,
+      "comparison_type": "greater"
+    },
+    "api_error_rate": {
+      "metric_name": "api_error_rate",
+      "warning_threshold": 0.05,
+      "critical_threshold": 0.1,
+      "comparison_type": "greater"
+    },
+    "memory_usage": {
+    "metric_name": "memory_usage",
+    "warning_threshold": 0.85,  
+    "critical_threshold": 0.95,  
+    "comparison_type":"greater"
+    },
+    "model_accuracy": {
+      "metric_name": "model_accuracy",
+      "warning_threshold": 0.85,
+      "critical_threshold": 0.8,
+      "comparison_type": "less"
+    }
+  },
+  "notifications": {
+    "email": {
+      "enabled": false,
+      "smtp_server": "smtp.gmail.com",
+      "smtp_port": 587,
+      "username": "",
+      "password": "",
+      "recipients": []
+    },
+    "webhook": {
+      "enabled": false,
+      "url": "",
+      "headers": {}
+    }
+  }
+}

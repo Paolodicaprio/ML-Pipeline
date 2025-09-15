@@ -1,0 +1,7 @@
+{
+  "monitoring_interval": 60,
+  "api_url": "http://localhost:8000",
+  "model_path": "models",
+  "enabled_monitors": ["api", "model", "system"],
+  "alert_config": "monitoring/alert_config.json"
+}

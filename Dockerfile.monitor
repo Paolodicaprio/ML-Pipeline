@@ -1,0 +1,35 @@
+# Dockerfile pour le service de monitoring en temps réel
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Installer les dépendances système
+RUN apt-get update && apt-get install -y \
+    curl \
+    procps \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copier les requirements
+COPY requirements.txt .
+
+# Installer les dépendances Python
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copier les fichiers de l'application
+COPY src/ ./src/
+COPY monitoring/ ./monitoring/
+
+# Créer les répertoires nécessaires
+RUN mkdir -p monitoring/data
+
+# Créer un utilisateur non-root
+RUN useradd -m -u 1000 monitor
+RUN chown -R monitor:monitor /app
+USER monitor
+
+# Healthcheck
+HEALTHCHECK --interval=60s --timeout=10s --start-period=10s --retries=3 \
+    CMD python -c "import sqlite3; sqlite3.connect('monitoring/metrics.db').execute('SELECT 1')" || exit 1
+
+# Commande de démarrage
+CMD ["python", "src/real_time_monitor.py", "--daemon"]
