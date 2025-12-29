@@ -1,0 +1,82 @@
+
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+pip-wheel-metadata/
+
+# Virtual environments
+.env
+.env.*
+.venv/
+venv/
+env/
+ENV/
+
+# Testing / coverage / linters
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+.mypy_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE/editor config
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Logs and runtime files
+*.log
+logs/
+*.pid
+
+# Databases
+*.sqlite3
+*.db
+*.db-journal
+
+# Model and binary artifacts (ne pas committer les modèles entraînés)
+*.joblib
+*.h5
+*.hdf5
+*.pt
+*.pth
+*.onnx
+*.pb
+*.ckpt
+models/*.joblib
+
+# Données binaires / artefacts d'entraînement
+*.npy
+*.npz
+
+# Secrets and keys
+*.pem
+*.key
+*.crt
+*.asc
+*.gpg
+.env
+
+# Docker overrides / secrets
+docker-compose.override.yml
+docker-compose.*.yml
+
+# Misc
+*.egg
+*.whl
+
+

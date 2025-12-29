@@ -38,9 +38,11 @@ services:
       - ./deploy:/app/deploy:ro
       - ./build:/app/build:ro
       - ./data:/app/data:ro
+      - ./reports:/app/reports:ro
     environment:
       - STREAMLIT_SERVER_PORT=8501
       - STREAMLIT_SERVER_ADDRESS=0.0.0.0
+      - DRIFT_REPORT_DIR=/app/reports/drift
     networks:
       - ml-network
     restart: unless-stopped

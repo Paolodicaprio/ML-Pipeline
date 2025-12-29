@@ -2,8 +2,8 @@
 """
 Script principal pour exécuter le pipeline ML complet en une seule commande.
 Automatise tout le workflow de l'entraînement au déploiement.
+VERSION CORRIGÉE avec génération automatique du rapport drift
 """
-
 import os
 import sys
 import json
@@ -53,7 +53,7 @@ class MLPipelineOrchestrator:
         """Crée les dossiers nécessaires."""
         directories = [
             'build', 'data', 'deploy', 'model_history', 
-            'reports/drift', 'build/visualizations'
+            'reports/drift', 'reports/pipeline', 'build/visualizations'
         ]
         
         for directory in directories:
@@ -125,7 +125,7 @@ class MLPipelineOrchestrator:
         
         required_packages = [
             'numpy', 'pandas', 'scikit-learn', 'matplotlib', 
-            'seaborn', 'pyyaml', 'streamlit', 'fastapi'
+            'seaborn', 'pyyaml', 'streamlit', 'fastapi', 'scipy'
         ]
         
         missing_packages = []
@@ -191,11 +191,13 @@ class MLPipelineOrchestrator:
     
     def monitor_drift(self):
         """Surveille le data drift."""
-        # Ajouter le chemin des données de test par défaut
+        # Utiliser les données de test par défaut
+        test_path = self.config.get('data', {}).get('test_path', 'data/classification_test.csv')
+        
         return self.execute_step(
             "MONITOR_DRIFT",
-            f"python src/monitor_drift.py --config {self.config_path} --new-data data/classification_test.csv",
-            "Surveillance du data drift",
+            f"python src/monitor_drift.py --config {self.config_path} --new-data {test_path}",
+            "Surveillance du data drift et génération du rapport",
             critical=False  # Non critique pour permettre la continuation
         )
     
@@ -269,8 +271,8 @@ class MLPipelineOrchestrator:
             }
         }
         
-        # Sauvegarder le rapport
-        report_path = f"pipeline_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        # Sauvegarder le rapport dans le dossier reports/pipeline
+        report_path = f"reports/pipeline/pipeline_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
         with open(report_path, 'w') as f:
             json.dump(report, f, indent=2)
         
@@ -294,8 +296,8 @@ class MLPipelineOrchestrator:
             }
         }
         
-        # Sauvegarder le rapport
-        report_path = f"pipeline_failure_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        # Sauvegarder le rapport dans le dossier reports/pipeline
+        report_path = f"reports/pipeline/pipeline_failure_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
         with open(report_path, 'w') as f:
             json.dump(report, f, indent=2)
         
@@ -329,25 +331,30 @@ class MLPipelineOrchestrator:
             if not success:
                 return False
             
-            # 5. Surveillance du drift (optionnel)
-            if not skip_drift:
-                success, _ = self.monitor_drift()
-                # Continue même si le drift échoue
-            
-            # 6. Évaluation du modèle
+            # 5. Évaluation du modèle
             success, _ = self.evaluate_model()
             if not success:
                 return False
             
-            # 7. Comparaison avec v_best
+            # 6. Comparaison avec v_best
             success, _ = self.compare_models()
             if not success:
                 return False
             
-            # 8. Déploiement
+            # 7. Déploiement
             success, _ = self.deploy_model()
             if not success:
                 return False
+            
+            # 8. Surveillance du drift (après déploiement)
+            if not skip_drift:
+                logger.info("[INFO] Génération du rapport de drift...")
+                success, _ = self.monitor_drift()
+                # Continue même si le drift échoue
+                if success:
+                    logger.info("[SUCCESS] Rapport de drift généré avec succès")
+                else:
+                    logger.warning("[WARNING] La génération du rapport de drift a échoué, mais le pipeline continue")
             
             # 9. Lancement des services Docker (optionnel)
             if not skip_docker:

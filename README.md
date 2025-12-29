@@ -81,7 +81,7 @@ uvicorn main:app --reload --port 8000
 
 # Dashboard Streamlit
 cd app
-streamlit run app.py --server.port 8501
+streamlit run app/app.py --server.port 8501
 ```
 
 ### Avec Docker (développement)

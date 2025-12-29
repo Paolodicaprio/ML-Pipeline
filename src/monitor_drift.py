@@ -1,6 +1,6 @@
 """
 Script de surveillance du Data Drift pour le pipeline ML.
-Détecte les changements dans la distribution des données entre l'entraînement et la production.
+VERSION CORRIGÉE avec gestion améliorée des erreurs et des chemins
 """
 import os
 import sys
@@ -8,6 +8,8 @@ import json
 import yaml
 import numpy as np
 import pandas as pd
+import matplotlib
+matplotlib.use('Agg')  # Backend non-interactif pour éviter les erreurs
 import matplotlib.pyplot as plt
 import seaborn as sns
 from datetime import datetime
@@ -62,7 +64,7 @@ class DataDriftMonitor:
     def load_new_data(self, new_data_path):
         """Charge les nouvelles données pour comparaison."""
         try:
-            if not os.path.exists(new_data_path):
+            if not new_data_path or not os.path.exists(new_data_path):
                 # Si pas de nouvelles données, utiliser une partie des données de test
                 logger.info("Pas de nouvelles données trouvées, utilisation des données de test pour simulation")
                 test_path = self.config['data'].get('test_path')
@@ -174,15 +176,19 @@ class DataDriftMonitor:
             
             plt.tight_layout()
             
-            # Sauvegarder la figure
-            viz_path = os.path.join(self.reports_dir, f"drift_visualizations_{datetime.now().strftime('%Y%m%d_%H%M%S')}", "images", "driftvisualizations.jpg")
+            # Sauvegarder la figure avec un chemin corrigé
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            viz_path = os.path.join(self.reports_dir, f"drift_visualizations_{timestamp}.png")
             plt.savefig(viz_path, dpi=300, bbox_inches='tight')
             plt.close()
             
+            logger.info(f"Visualisations sauvegardées: {viz_path}")
             return viz_path
             
         except Exception as e:
             logger.error(f"Erreur lors de la génération des visualisations: {e}")
+            import traceback
+            traceback.print_exc()
             return None
     
     def generate_html_report(self, drift_results, viz_path, X_ref, X_new):
@@ -211,6 +217,7 @@ class DataDriftMonitor:
             <html>
             <head>
                 <title>Rapport de Surveillance du Data Drift</title>
+                <meta charset="UTF-8">
                 <style>
                     body {{ font-family: Arial, sans-serif; margin: 20px; }}
                     .header {{ background-color: #f0f0f0; padding: 20px; border-radius: 5px; }}
@@ -338,10 +345,13 @@ class DataDriftMonitor:
             with open(html_path, 'w', encoding='utf-8') as f:
                 f.write(html_content)
             
+            logger.info(f"Rapport HTML généré: {html_path}")
             return html_path
             
         except Exception as e:
             logger.error(f"Erreur lors de la génération du rapport HTML: {e}")
+            import traceback
+            traceback.print_exc()
             return None
     
     def generate_json_report(self, drift_results, global_status, X_ref, X_new):
@@ -382,10 +392,13 @@ class DataDriftMonitor:
             with open(latest_path, 'w') as f:
                 json.dump(json_report, f, indent=2)
             
+            logger.info(f"Rapport JSON généré: {json_path}")
             return json_path
             
         except Exception as e:
             logger.error(f"Erreur lors de la génération du rapport JSON: {e}")
+            import traceback
+            traceback.print_exc()
             return None
     
     def monitor_drift(self, new_data_path=None):
@@ -445,6 +458,8 @@ class DataDriftMonitor:
             
         except Exception as e:
             logger.error(f"Erreur lors de la surveillance du drift: {e}")
+            import traceback
+            traceback.print_exc()
             return False
 
 def main():

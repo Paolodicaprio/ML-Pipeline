@@ -33,7 +33,7 @@ Elle permet de visualiser les performances des modèles, de comparer les version
 def load_data(path):
     """Charge les données JSON depuis un fichier."""
     try:
-        with open(path, 'r') as f:
+        with open(path, 'r', encoding='utf-8') as f:
             data = json.load(f)
         return data
     except Exception as e:
@@ -53,25 +53,121 @@ def base64_to_image(base64_str):
 # Fonction pour charger le dernier rapport de drift
 @st.cache_data
 def load_drift_report():
-    """Charge le dernier rapport de drift."""
-    drift_path = "reports/drift/latest_drift_report.json"
-    if os.path.exists(drift_path):
-        return load_data(drift_path)
+    """Charge le dernier rapport de drift (plus robuste).
+
+    Stratégie:
+    1) Essayer des chemins explicites `latest_drift_report.json`
+    2) Si introuvable, chercher tous les fichiers `drift_report_*.json` et choisir le plus récent
+    3) Enregistrer dans `st.session_state['last_drift_path']` le chemin réussi pour faciliter le debug
+    4) Signaler les erreurs de parsing pour aider au diagnostic
+    """
+    # Réinitialiser la trace précédente
+    try:
+        st.session_state.pop('last_drift_path', None)
+    except Exception:
+        pass
+
+    # Support pour exécution dans Docker ou environnements conteneurisés
+    drift_env = os.environ.get('DRIFT_REPORT_DIR')
+    container_app_path = "/app/reports/drift"
+
+    possible_files = [
+        r"E:\WORK\Mémoire\ml-pipeline-project\reports\drift\latest_drift_report.json",
+        os.path.normpath("../reports/drift/latest_drift_report.json"),
+        os.path.normpath("reports/drift/latest_drift_report.json"),
+        os.path.join(os.getcwd(), "reports", "drift", "latest_drift_report.json"),
+    ]
+
+    # Si l'utilisateur a défini une variable d'environnement pointant vers le dossier des rapports, l'insérer en tête
+    if drift_env:
+        possible_files.insert(0, os.path.join(drift_env, 'latest_drift_report.json'))
+
+    # Vérifier aussi le chemin usuel à l'intérieur du container
+    possible_files.insert(0, os.path.join(container_app_path, 'latest_drift_report.json'))
+
+    for p in possible_files:
+        try:
+            if os.path.exists(p):
+                with open(p, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                st.session_state['last_drift_path'] = os.path.abspath(p)
+                return data
+        except Exception as e:
+            # Laisser l'utilisateur voir l'erreur dans le dashboard
+            st.error(f"Erreur lors du chargement du fichier {p}: {e}")
+            continue
+
+    # Si aucun `latest_drift_report.json`, chercher tous les rapports et choisir le plus récent (mtime)
+    drift_dirs = [
+        r"E:\WORK\Mémoire\ml-pipeline-project\reports\drift",
+        os.path.normpath("../reports/drift"),
+        os.path.normpath("reports/drift"),
+        os.path.join(os.getcwd(), "reports", "drift"),
+        container_app_path,
+    ]
+
+    # Si variable d'environnement définie, l'ajouter aussi
+    if drift_env:
+        drift_dirs.insert(0, drift_env)
+
+    candidates = []
+    for d in drift_dirs:
+        if os.path.exists(d) and os.path.isdir(d):
+            try:
+                for f in os.listdir(d):
+                    if f.endswith('.json') and (f.startswith('drift_report_') or f == 'latest_drift_report.json'):
+                        candidates.append(os.path.join(d, f))
+            except Exception:
+                continue
+
+    if candidates:
+        # Trier par date de modification, décroissant
+        candidates.sort(key=lambda x: os.path.getmtime(x), reverse=True)
+        for c in candidates:
+            try:
+                with open(c, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                st.session_state['last_drift_path'] = os.path.abspath(c)
+                return data
+            except Exception as e:
+                # Continuer si un fichier est corrompu
+                st.error(f"Erreur lors du parsing du fichier {c}: {e}")
+                continue
+
     return None
 
 # Fonction pour lister les rapports de drift disponibles
 def list_drift_reports():
-    """Liste tous les rapports de drift disponibles."""
-    drift_dir = "reports/drift"
-    if not os.path.exists(drift_dir):
-        return []
-    
-    reports = []
-    for file in os.listdir(drift_dir):
-        if file.endswith('.json') and file.startswith('drift_report_'):
-            reports.append(file)
-    
-    return sorted(reports, reverse=True)
+    """Liste tous les rapports de drift disponibles, triés par date de modification (plus récent d'abord)."""
+    drift_dirs = [
+        r"E:\WORK\Mémoire\ml-pipeline-project\reports\drift",
+        os.path.normpath("../reports/drift"),
+        os.path.normpath("reports/drift"),
+        os.path.join(os.getcwd(), "reports", "drift"),
+    ]
+
+    all_reports = []
+    for drift_dir in drift_dirs:
+        if os.path.exists(drift_dir) and os.path.isdir(drift_dir):
+            try:
+                for file in os.listdir(drift_dir):
+                    if file.endswith('.json') and (file.startswith('drift_report_') or file == 'latest_drift_report.json'):
+                        fullpath = os.path.join(drift_dir, file)
+                        try:
+                            mtime = os.path.getmtime(fullpath)
+                        except Exception:
+                            mtime = 0
+                        all_reports.append((fullpath, mtime))
+            except Exception:
+                continue
+
+    if all_reports:
+        # Trier par mtime décroissant
+        all_reports.sort(key=lambda x: x[1], reverse=True)
+        # Retourner juste les noms de fichiers (ou chemins si vous préférez)
+        return [os.path.basename(r[0]) for r in all_reports]
+
+    return []
 
 # Barre latérale pour la navigation
 st.sidebar.title("Navigation")
@@ -84,8 +180,17 @@ page = st.sidebar.radio(
 if page == "📈 Tableau de bord":
     st.header("📈 Tableau de bord")
     
-    reports_path = "deploy"
-    if os.path.exists(reports_path):
+    # Chercher le dossier deploy dans le parent ou local
+    reports_path_parent = "../deploy"
+    reports_path_local = "deploy"
+    
+    reports_path = None
+    if os.path.exists(reports_path_parent):
+        reports_path = reports_path_parent
+    elif os.path.exists(reports_path_local):
+        reports_path = reports_path_local
+    
+    if reports_path and os.path.exists(reports_path):
         st.success("Modèles déployés trouvés!")
         
         metadata = load_data(os.path.join(reports_path, "model_metadata.json"))
@@ -143,8 +248,16 @@ if page == "📈 Tableau de bord":
 elif page == "🔍 Détails du modèle":
     st.header("🔍 Détails du modèle")
     
-    deploy_path = "deploy"
-    if os.path.exists(deploy_path):
+    deploy_path_parent = "../deploy"
+    deploy_path_local = "deploy"
+    
+    deploy_path = None
+    if os.path.exists(deploy_path_parent):
+        deploy_path = deploy_path_parent
+    elif os.path.exists(deploy_path_local):
+        deploy_path = deploy_path_local
+    
+    if deploy_path and os.path.exists(deploy_path):
         metadata = load_data(os.path.join(deploy_path, "model_metadata.json"))
         if metadata:
             st.subheader("🔎 Paramètres du modèle")
@@ -186,9 +299,16 @@ elif page == "🔍 Détails du modèle":
 elif page == "🔄 Comparaison":
     st.header("🔄 Comparaison des modèles")
     
-    deploy_path = "deploy"
+    deploy_path_parent = "../deploy"
+    deploy_path_local = "deploy"
+    build_path_parent = "../build"
+    build_path_local = "build"
+    
+    deploy_path = deploy_path_parent if os.path.exists(deploy_path_parent) else deploy_path_local
+    build_path = build_path_parent if os.path.exists(build_path_parent) else build_path_local
+    
     if os.path.exists(deploy_path):
-        comparison_path = os.path.join("build", "comparison_report.json")
+        comparison_path = os.path.join(build_path, "comparison_report.json")
         if os.path.exists(comparison_path):
             comparison = load_data(comparison_path)
             if comparison:
@@ -280,12 +400,17 @@ elif page == "🚨 Monitoring Drift":
     dans la distribution des données entre l'entraînement et la production.
     """)
     
+    # Bouton pour rafraîchir les données
+    if st.button("🔄 Rafraîchir les données"):
+        st.cache_data.clear()
+        st.rerun()
+    
     drift_report = load_drift_report()
     
     if drift_report:
         st.subheader("📊 Statut Global du Drift")
         
-        global_status = drift_report.get('globalstatus', 'INCONNU')
+        global_status = drift_report.get('global_status', 'INCONNU')
         summary = drift_report.get('summary', {})
         
         if global_status == "OK":
@@ -359,7 +484,13 @@ elif page == "🚨 Monitoring Drift":
             st.text(f"Généré le: {drift_report.get('timestamp', 'Inconnu')}")
             st.text(f"Échantillons de référence: {summary.get('reference_samples', 0)}")
             st.text(f"Seuil de détection: {summary.get('drift_threshold', 0.05)}")
-        
+            # Indiquer le fichier chargé pour faciliter le debug
+            last_path = st.session_state.get('last_drift_path')
+            if last_path:
+                st.text(f"Rapport chargé depuis: {last_path}")
+            else:
+                st.text("Rapport chargé depuis: Inconnu")
+
         with col2:
             metadata = drift_report.get('metadata', {})
             if metadata:
@@ -393,17 +524,99 @@ elif page == "🚨 Monitoring Drift":
             - Continuer la surveillance régulière
             - Le modèle peut continuer à être utilisé
             """)
+        
+        # Afficher les rapports disponibles
+        st.subheader("📂 Rapports de Drift Disponibles")
+        available_reports = list_drift_reports()
+        if available_reports:
+            st.info(f"{len(available_reports)} rapport(s) de drift disponible(s)")
+            with st.expander("Voir la liste des rapports"):
+                for report in available_reports[:10]:  # Afficher les 10 plus récents
+                    st.text(f"• {report}")
+        else:
+            st.warning("Aucun rapport de drift trouvé dans le dossier reports/drift/")
     
     else:
         st.warning("""
         Aucun rapport de drift disponible. 
         
-        Pour générer un rapport de drift:
-        1. Exécutez le pipeline complet avec: `python src/pipeline_with_drift.py`
-        2. Ou exécutez directement: `python src/monitor_drift.py`
+        **Pour générer un rapport de drift:**
+        
+        1. **Méthode 1 - Pipeline complet** (recommandé):
+           ```bash
+           python run_full_pipeline.py
+           ```
+           Cette commande exécute tout le pipeline incluant la génération du rapport de drift.
+        
+        2. **Méthode 2 - Drift uniquement**:
+           ```bash
+           python src/monitor_drift.py --config models/model_config.yml --new-data data/classification_test.csv
+           ```
+           Cette commande génère uniquement le rapport de drift.
         
         Les rapports seront sauvegardés dans le dossier `reports/drift/`.
+        
+        **Vérification:**
+        - Assurez-vous que le dossier `reports/drift/` existe
+        - Vérifiez que le fichier `latest_drift_report.json` est présent
+        - Cliquez sur le bouton "🔄 Rafraîchir les données" ci-dessus après génération
         """)
+        
+        # Afficher le chemin de recherche pour debug
+        with st.expander("🔧 Informations de débogage"):
+            st.text("Chemins recherchés:")
+            st.text("1. E:\\WORK\\Mémoire\\ml-pipeline-project\\reports\\drift\\latest_drift_report.json")
+            st.text("2. ../reports/drift/latest_drift_report.json")
+            st.text("3. reports/drift/latest_drift_report.json")
+            st.text("4. Dernier fichier drift_report_*.json dans reports/drift/")
+            
+            st.text("\nRépertoire de travail actuel:")
+            st.text(os.getcwd())
+            
+            # Vérifier tous les dossiers possibles
+            drift_dirs = [
+                r"E:\WORK\Mémoire\ml-pipeline-project\reports\drift",
+                "../reports/drift",
+                "reports/drift"
+            ]
+            
+            for drift_dir in drift_dirs:
+                st.text(f"\nFichiers dans {drift_dir} :")
+                if os.path.exists(drift_dir):
+                    try:
+                        files = os.listdir(drift_dir)
+                        for f in files[:10]:
+                            st.text(f"  • {f}")
+                    except Exception as e:
+                        st.text(f"  Erreur: {e}")
+                else:
+                    st.text("  Dossier non trouvé")
+
+            # Infos additionnelles pour le debug: dernier chemin tenté/existant
+            last = st.session_state.get('last_drift_path')
+            if last:
+                st.text(f"Dernier rapport chargé: {last}")
+                st.text(f"Chemin existe: {os.path.exists(last)}")
+            else:
+                st.text("Aucun rapport chargé récemment (session vide)")
+
+            # Afficher variable d'environnement et détection container
+            drift_env = os.environ.get('DRIFT_REPORT_DIR')
+            st.text(f"DRIFT_REPORT_DIR: {drift_env}")
+            in_container = os.path.exists('/.dockerenv') or os.getcwd() == '/app'
+            st.text(f"Exécution en container détectée: {in_container}")
+
+            # Présence du fichier latest_drift_report.json (chemin absolu)
+            abs_path = r"E:\\WORK\\Mémoire\\ml-pipeline-project\\reports\\drift\\latest_drift_report.json"
+            st.text(f"Existence du chemin absolu {abs_path}: {os.path.exists(abs_path)}")
+
+            # Suggestion si exécution dans container sans dossier monté
+            if in_container and not (os.path.exists('/app/reports/drift') or os.path.exists(abs_path)):
+                st.warning("Le dossier 'reports/drift' n'est pas monté dans le container.\n" \
+                           "Si vous utilisez Docker, ajoutez ce volume dans votre docker-compose.yml:\n" \
+                           "  volumes:\n" \
+                           "    - ./reports:/app/reports:ro\n" \
+                           "Puis redémarrez le service streamlit ou exécutez Streamlit localement depuis la racine du projet.")
 
 # Page: Guide d'utilisation
 elif page == "📚 Guide d'utilisation":
@@ -417,14 +630,13 @@ elif page == "📚 Guide d'utilisation":
     st.subheader("📋 Table des Matières")
     st.markdown("""
     1. [Prérequis](#prérequis)
-    2. [Structure du Projet](#structure-du-projet)
+    2. [Installation](#installation)
     3. [Configuration YAML](#configuration-yaml)
     4. [Préparation des Données](#préparation-des-données)
     5. [Exécution du Pipeline](#exécution-du-pipeline)
     6. [Services API et Dashboard](#services-api-et-dashboard)
     7. [Surveillance du Drift](#surveillance-du-drift)
-    8. [Intégration GitHub Actions](#intégration-github-actions)
-    9. [Dépannage](#dépannage)
+    8. [Dépannage](#dépannage)
     """)
     
     # Section 1: Prérequis
@@ -433,58 +645,39 @@ elif page == "📚 Guide d'utilisation":
     st.markdown("""
     **Logiciels requis:**
     - Python 3.8+ 
-    - Docker et Docker Compose
+    - Docker et Docker Compose (optionnel)
     - Git
     - Au moins 4GB de RAM disponible
-    
-    **Dépendances Python:**
     """)
     
+    # Section 2: Installation
+    st.subheader("2. 📦 Installation")
+    
+    st.markdown("**Étape 1: Cloner le projet**")
     st.code("""
-pip install -r requirements.txt
-
-# Principales dépendances:
-# - scikit-learn
-# - pandas
-# - numpy
-# - fastapi
-# - streamlit
-# - pyyaml
-# - matplotlib
-# - seaborn
+# Cloner le repository
+git clone <votre-repo>
+cd ml-pipeline-project
     """, language="bash")
     
-    # Section 2: Structure du Projet
-    st.subheader("2. 📁 Structure du Projet")
-    
-    st.markdown("**Voici la structure de dossiers que vous devez respecter:**")
-    
+    st.markdown("**Étape 2: Créer un environnement virtuel**")
     st.code("""
-ml-pipeline-project/
-├── api/                    # API FastAPI
-│   ├── main.py            # Application principale
-│   ├── model_loader.py    # Chargement des modèles
-│   ├── auth.py            # Authentification
-│   └── requirements.txt   # Dépendances API
-├── app/                   # Dashboard Streamlit
-│   └── app.py            # Application Streamlit
-├── src/                   # Scripts du pipeline ML
-│   ├── build_model.py    # Construction du modèle
-│   ├── test_model.py     # Tests du modèle
-│   ├── evaluate_model.py # Évaluation
-│   ├── compare_models.py # Comparaison v_best
-│   ├── deploy_model.py   # Déploiement
-│   └── monitor_drift.py  # Surveillance drift
-├── models/               # Configuration des modèles
-│   └── model_config.yml  # Configuration YAML
-├── data/                 # Données d'entraînement
-├── deploy/               # Modèles déployés
-├── build/                # Artefacts de build
-├── reports/              # Rapports de drift
-├── docker-compose.yml    # Configuration Docker
-├── .env                  # Variables d'environnement
-└── run_full_pipeline.py  # Script principal
-    """, language="text")
+# Créer l'environnement virtuel
+python -m venv venv
+
+# Activer l'environnement
+# Sur Windows:
+venv\\Scripts\\activate
+# Sur Linux/Mac:
+source venv/bin/activate
+    """, language="bash")
+    
+    st.markdown("**Étape 3: Installer les dépendances**")
+    st.code("""
+pip install -r requirements.txt
+    """, language="bash")
+    
+    st.info("💡 **Astuce**: Le pipeline vérifie automatiquement les dépendances et installe les packages manquants lors de l'exécution.")
     
     # Section 3: Configuration YAML
     st.subheader("3. ⚙️ Configuration YAML")
@@ -500,6 +693,7 @@ model:
   name: "MonModeleClassification"
   type: "classification"
   version: "1.0.0"
+  algorithm: "random_forest"
 
 data:
   train_path: "data/mon_dataset_train.csv"
@@ -510,12 +704,14 @@ data:
 parameters:
   max_depth: 10
   n_estimators: 100
-  random_state: 42
+  min_samples_split: 2
+  min_samples_leaf: 1
 
 training:
   epochs: 100
   batch_size: 32
   learning_rate: 0.001
+  validation_split: 0.2
 
 evaluation:
   metrics:
@@ -523,13 +719,6 @@ evaluation:
     - precision
     - recall
     - f1
-
-drift_monitoring:
-  enabled: true
-  threshold: 0.05
-  methods:
-    - kolmogorov_smirnov
-    - mann_whitney
         """, language="yaml")
     
     with tab2:
@@ -539,6 +728,7 @@ model:
   name: "MonModeleRegression"
   type: "regression"
   version: "1.0.0"
+  algorithm: "random_forest"
 
 data:
   train_path: "data/mon_dataset_train.csv"
@@ -549,25 +739,20 @@ data:
 parameters:
   max_depth: 15
   n_estimators: 200
-  random_state: 42
+  min_samples_split: 5
+  min_samples_leaf: 2
 
 training:
   epochs: 150
   batch_size: 64
   learning_rate: 0.01
+  validation_split: 0.2
 
 evaluation:
   metrics:
     - mse
     - mae
     - rmse
-
-drift_monitoring:
-  enabled: true
-  threshold: 0.05
-  methods:
-    - kolmogorov_smirnov
-    - mann_whitney
         """, language="yaml")
     
     # Section 4: Préparation des Données
@@ -630,10 +815,12 @@ python run_full_pipeline.py --skip-drift
         4. 🧪 Tests du modèle
         5. 📈 Évaluation des performances
         6. 🔄 Comparaison avec v_best
-        7. 🚨 Surveillance du drift
-        8. 🚀 Déploiement
-        9. 🐳 Lancement des services Docker
+        7. 🚀 Déploiement
+        8. 🚨 Surveillance du drift
+        9. 🐳 Lancement des services Docker (optionnel)
         """)
+        
+        st.success("✅ **Résultat**: Un modèle déployé, des rapports complets, une API et un dashboard opérationnels!")
     
     with exec_tab2:
         st.markdown("**Exécution étape par étape:**")
@@ -650,11 +837,11 @@ python src/evaluate_model.py
 # 4. Comparaison avec v_best
 python src/compare_models.py
 
-# 5. Surveillance du drift
-python src/monitor_drift.py --config models/model_config.yml --new-data data/new_data.csv
-
-# 6. Déploiement
+# 5. Déploiement
 python src/deploy_model.py
+
+# 6. Surveillance du drift
+python src/monitor_drift.py --config models/model_config.yml --new-data data/new_data.csv
         """, language="bash")
         
         st.info("💡 **Conseil:** L'exécution étape par étape est utile pour le débogage et le développement.")
@@ -662,7 +849,7 @@ python src/deploy_model.py
     with exec_tab3:
         st.markdown("**Déploiement avec Docker:**")
         st.code("""
-# Lancement complète des services
+# Lancement complet des services
 docker-compose up -d
 
 # Construction et lancement
@@ -723,10 +910,107 @@ curl -X POST "http://localhost:8000/model/reload" \\
      -H "Authorization: Bearer votre-token"
     """, language="bash")
     
+    st.markdown("**Lancement du Dashboard:**")
+    st.code("""
+# Depuis la racine du projet
+streamlit run app/app.py
+
+# Avec un port spécifique
+streamlit run app/app.py --server.port 8501
+    """, language="bash")
+    
     # Section 7: Surveillance du Drift
     st.subheader("7. 🚨 Surveillance du Drift")
     
-    st.markdown("**Configuration du monitoring du drift:**")
+    st.markdown("""
+    **Le data drift** désigne les changements dans la distribution des données entre l'entraînement et la production.
+    
+    **Génération du rapport de drift:**
+    """)
+    
+    st.code("""
+# Méthode 1: Avec le pipeline complet (recommandé)
+python run_full_pipeline.py
+
+# Méthode 2: Drift uniquement
+python src/monitor_drift.py --config models/model_config.yml --new-data data/new_data.csv
+    """, language="bash")
+    
+    st.markdown("""
+    **Interprétation des résultats:**
+    
+    - **OK (< 20% drift)**: Situation normale, continuer la surveillance
+    - **ATTENTION (20-50% drift)**: Surveillance renforcée, préparer le réentraînement
+    - **ALARMANT (> 50% drift)**: Réentraînement immédiat recommandé
+    
+    **Rapports générés:**
+    - `reports/drift/drift_report_YYYYMMDD_HHMMSS.json` - Rapport JSON
+    - `reports/drift/drift_report_YYYYMMDD_HHMMSS.html` - Rapport HTML avec visualisations
+    - `/images/DriftVisualization.jpg` - Graphiques
+    - `reports/drift/latest_drift_report.json` - Dernier rapport (utilisé par le dashboard)
+    """)
+    
+    # Section 8: Dépannage
+    st.subheader("8. 🚨 Dépannage")
+    
+    st.markdown("**Problèmes courants et solutions:**")
+    
+    with st.expander("❌ Le rapport de drift n'apparaît pas dans le dashboard"):
+        st.markdown("""
+        **Solutions:**
+        1. Vérifiez que le dossier `reports/drift/` existe
+        2. Exécutez `python run_full_pipeline.py` pour générer le rapport
+        3. Vérifiez que `latest_drift_report.json` est présent dans `reports/drift/`
+        4. Cliquez sur "🔄 Rafraîchir les données" dans l'onglet Monitoring Drift
+        5. Relancez Streamlit: `streamlit run app/app.py`
+        """)
+    
+    with st.expander("❌ Erreur: Modèle non trouvé"):
+        st.markdown("""
+        **Solutions:**
+        1. Vérifiez que le dossier `deploy/` contient les fichiers du modèle
+        2. Exécutez le pipeline complet: `python run_full_pipeline.py`
+        3. Vérifiez les logs dans `pipeline_execution.log`
+        """)
+    
+    with st.expander("❌ Erreur d'authentification API"):
+        st.markdown("""
+        **Solutions:**
+        1. Vérifiez que le fichier `.env` existe et contient `API_TOKEN`
+        2. Utilisez le bon token dans vos requêtes
+        3. Vérifiez que le token est au format: `Authorization: Bearer votre-token`
+        """)
+    
+    with st.expander("❌ Port déjà utilisé"):
+        st.markdown("""
+        **Solutions:**
+        1. Changez le port dans `docker-compose.yml`:
+           ```yaml
+           ports:
+             - "8001:8000"  # API
+             - "8502:8501"  # Streamlit
+           ```
+        2. Ou arrêtez le service utilisant le port:
+           ```bash
+           # Windows
+           netstat -ano | findstr :8000
+           taskkill /PID <PID> /F
+           
+           # Linux/Mac
+           lsof -i :8000
+           kill -9 <PID>
+           ```
+        """)
+    
+    with st.expander("❌ Dépendances manquantes"):
+        st.markdown("""
+        **Solutions:**
+        1. Réinstallez les dépendances: `pip install -r requirements.txt`
+        2. Le pipeline installe automatiquement les packages manquants
+        3. Vérifiez votre version de Python: `python --version` (doit être 3.8+)
+        """)
+    
+    st.success("✅ **Besoin d'aide supplémentaire?** Consultez les logs dans `pipeline_execution.log` ou ouvrez une issue sur GitHub.")
 
 # Page: À propos
 elif page == "ℹ️ À propos":
@@ -755,9 +1039,17 @@ elif page == "ℹ️ À propos":
     - FastAPI
     - Docker
     - Scikit-learn
-    - Pandas, NumPy, Matplotlib
+    - Pandas, NumPy, Matplotlib, Seaborn
     
-    **Auteur:** Votre Nom
-    **Contact:** votre.email@example.com
+    **Système v_best:**
+    Le système v_best est une innovation majeure qui garantit que seuls les meilleurs modèles
+    sont déployés en production. Chaque nouveau modèle est automatiquement comparé au v_best
+    existant, et ne le remplace que s'il est meilleur sur plus de 50% des métriques.
+    
+    **Surveillance du Drift:**
+    Le système surveille en continu les changements de distribution des données en production
+    et génère des alertes automatiques lorsque le drift dépasse les seuils configurés.
+    
+    **Auteur:** Projet MLOps - Pipeline ML Automatisé
     **Licence:** MIT
     """)

@@ -1,0 +1,82 @@
+{
+  "pipeline_status": "SUCCESS",
+  "start_time": "2025-12-17T13:05:54.380936",
+  "end_time": "2025-12-17T13:07:56.521634",
+  "total_duration_seconds": 122.140698,
+  "execution_steps": [
+    {
+      "step": "INSTALL_DEPS",
+      "status": "SUCCESS",
+      "duration": 12.224589,
+      "description": "Installation des d\u00e9pendances manquantes",
+      "timestamp": "2025-12-17T13:06:13.435005"
+    },
+    {
+      "step": "BUILD_MODEL",
+      "status": "SUCCESS",
+      "duration": 10.067673,
+      "description": "Construction et entra\u00eenement du mod\u00e8le",
+      "timestamp": "2025-12-17T13:06:25.733522"
+    },
+    {
+      "step": "TEST_MODEL",
+      "status": "SUCCESS",
+      "duration": 5.104813,
+      "description": "Test du mod\u00e8le sur les donn\u00e9es de test",
+      "timestamp": "2025-12-17T13:06:35.802287"
+    },
+    {
+      "step": "EVALUATE_MODEL",
+      "status": "SUCCESS",
+      "duration": 8.681342,
+      "description": "\u00c9valuation des performances du mod\u00e8le",
+      "timestamp": "2025-12-17T13:06:40.909576"
+    },
+    {
+      "step": "COMPARE_MODELS",
+      "status": "SUCCESS",
+      "duration": 2.945167,
+      "description": "Comparaison avec le mod\u00e8le v_best",
+      "timestamp": "2025-12-17T13:06:49.592975"
+    },
+    {
+      "step": "DEPLOY_MODEL",
+      "status": "SUCCESS",
+      "duration": 0.703087,
+      "description": "D\u00e9ploiement du mod\u00e8le",
+      "timestamp": "2025-12-17T13:06:52.539143"
+    },
+    {
+      "step": "MONITOR_DRIFT",
+      "status": "SUCCESS",
+      "duration": 24.629021,
+      "description": "Surveillance du data drift et g\u00e9n\u00e9ration du rapport",
+      "timestamp": "2025-12-17T13:06:53.248944"
+    },
+    {
+      "step": "DOCKER_DOWN",
+      "status": "SUCCESS",
+      "duration": 0.522278,
+      "description": "Arr\u00eat des services Docker existants",
+      "timestamp": "2025-12-17T13:07:18.051418"
+    },
+    {
+      "step": "DOCKER_UP",
+      "status": "SUCCESS",
+      "duration": 37.943053,
+      "description": "Construction et lancement des services Docker",
+      "timestamp": "2025-12-17T13:07:18.577042"
+    }
+  ],
+  "model_info": {
+    "algorithm": "random_forest",
+    "name": "ClassifierModel",
+    "type": "classification",
+    "version": "2.0.0"
+  },
+  "summary": {
+    "total_steps": 9,
+    "successful_steps": 9,
+    "failed_steps": 0
+  }
+}
