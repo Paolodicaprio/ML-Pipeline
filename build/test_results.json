@@ -1,1 +1,1 @@
-{"model_type": "classification", "model_name": "ClassifierModel", "model_version": "2.0.0", "test_metrics": {"accuracy": 0.89, "precision": 0.8910871545703006, "recall": 0.89, "f1": 0.8897342995169083}, "timestamp": "2025-12-20T15:54:29.614546"}
+{"model_type": "classification", "model_name": "IrisClassifier", "model_version": "1.0.0", "test_metrics": {"accuracy": 0.9666666666666667, "precision": 0.9696969696969696, "recall": 0.9666666666666667, "f1": 0.9665831244778613}, "timestamp": "2025-12-30T13:38:55.094593"}

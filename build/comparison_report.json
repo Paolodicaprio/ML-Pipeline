@@ -1,37 +1,37 @@
 {
   "current_model": {
-    "name": "ClassifierModel",
-    "version": "2.0.0",
+    "name": "IrisClassifier",
+    "version": "1.0.0",
     "type": "classification"
   },
   "v_best_model": {
-    "version": "2.0.0"
+    "version": "1.0.0"
   },
   "metrics_comparison": {
     "accuracy": {
-      "current": 0.89,
-      "v_best": 0.89,
+      "current": 0.9666666666666667,
+      "v_best": 0.9666666666666667,
       "absolute_diff": 0.0,
       "percentage_diff": 0.0,
       "is_improvement": false
     },
     "precision": {
-      "current": 0.8910871545703006,
-      "v_best": 0.8910871545703006,
+      "current": 0.9696969696969696,
+      "v_best": 0.9696969696969696,
       "absolute_diff": 0.0,
       "percentage_diff": 0.0,
       "is_improvement": false
     },
     "recall": {
-      "current": 0.89,
-      "v_best": 0.89,
+      "current": 0.9666666666666667,
+      "v_best": 0.9666666666666667,
       "absolute_diff": 0.0,
       "percentage_diff": 0.0,
       "is_improvement": false
     },
     "f1": {
-      "current": 0.8897342995169083,
-      "v_best": 0.8897342995169083,
+      "current": 0.9665831244778613,
+      "v_best": 0.9665831244778613,
       "absolute_diff": 0.0,
       "percentage_diff": 0.0,
       "is_improvement": false
@@ -39,6 +39,6 @@
   },
   "overall_improvement": false,
   "is_new_v_best": false,
-  "timestamp": "2025-12-20T15:54:45.727828",
-  "commit_id": "c2c78002de794b154f96528bd0435520841d692f"
+  "timestamp": "2025-12-30T13:39:07.121952",
+  "commit_id": "37b24687fb021611ff983d45df016c5d0b5f1dd9"
 }

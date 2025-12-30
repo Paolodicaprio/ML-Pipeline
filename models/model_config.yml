@@ -1,26 +1,30 @@
 data:
-  test_path: data/classification_test.csv
-  test_split: 0.1
-  train_path: data/classification_train.csv
+  test_path: data/iris_test.csv
+  test_split: 0.2
+  train_path: data/iris_train.csv
   validation_split: 0.2
+
 evaluation:
   metrics:
   - accuracy
   - precision
   - recall
   - f1
+
 model:
   algorithm: random_forest
-  name: ClassifierModel
+  name: IrisClassifier
   type: classification
-  version: 2.0.0
+  version: 1.0.0
+
 parameters:
-  max_depth: 15
-  min_samples_leaf: 2
-  min_samples_split: 5
-  n_estimators: 200
+  max_depth: 10
+  min_samples_leaf: 1
+  min_samples_split: 2
+  n_estimators: 100
+
 training:
-  batch_size: 64
-  epochs: 150
-  learning_rate: 0.01
+  batch_size: 32
+  epochs: 100
+  learning_rate: 0.001
   validation_split: 0.2

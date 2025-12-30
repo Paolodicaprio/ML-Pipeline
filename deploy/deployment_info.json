@@ -1,8 +1,8 @@
 {
-  "deployment_timestamp": "2025-12-20T15:54:48.297631",
+  "deployment_timestamp": "2025-12-30T13:39:08.669000",
   "deployed_from": "v_best",
   "deployed_from_commit": "local_deployment",
   "deployed_by": "local_user",
-  "v_best_commit_id": "9d9d56d5f8c0c2567a0dfa81f73f128838f93b35",
-  "v_best_timestamp": "2025-09-04T11:37:08.216019"
+  "v_best_commit_id": "37b24687fb021611ff983d45df016c5d0b5f1dd9",
+  "v_best_timestamp": "2025-12-29T13:21:20.180502"
 }
